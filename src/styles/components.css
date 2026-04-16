@@ -945,15 +945,17 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 64px;
-  background: rgba(17, 22, 33, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  height: calc(64px + env(safe-area-inset-bottom, 0px));
+  background: #111621;
   border-top: 1px solid var(--border-color);
-  z-index: 200;
+  z-index: 9999;
   align-items: center;
   justify-content: space-around;
   padding: 0 var(--space-sm);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
 }
 .bottom-nav-item {
   display: flex;
