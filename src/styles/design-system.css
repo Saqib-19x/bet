@@ -1,0 +1,81 @@
+/* ===== BetKing Design System ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* --- Colors --- */
+  --bg-primary: #0b0e14;
+  --bg-secondary: #111621;
+  --bg-tertiary: #1a1f2e;
+  --bg-card: #161b28;
+  --bg-card-hover: #1e2438;
+  --bg-elevated: #222940;
+  --bg-input: #131825;
+
+  --border-color: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+
+  --text-primary: #f0f2f5;
+  --text-secondary: #8a92a6;
+  --text-tertiary: #5a6275;
+  --text-muted: #3d4456;
+
+  --accent-green: #00e676;
+  --accent-green-dim: rgba(0, 230, 118, 0.15);
+  --accent-green-glow: rgba(0, 230, 118, 0.3);
+  --accent-yellow: #ffca28;
+  --accent-yellow-dim: rgba(255, 202, 40, 0.15);
+  --accent-red: #ff5252;
+  --accent-red-dim: rgba(255, 82, 82, 0.15);
+  --accent-blue: #448aff;
+  --accent-blue-dim: rgba(68, 138, 255, 0.15);
+  --accent-orange: #ff9100;
+  --accent-orange-dim: rgba(255, 145, 0, 0.15);
+  --accent-purple: #b388ff;
+  --accent-purple-dim: rgba(179, 136, 255, 0.15);
+
+  /* --- Typography --- */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-xs: 0.6875rem;
+  --font-sm: 0.75rem;
+  --font-base: 0.875rem;
+  --font-md: 1rem;
+  --font-lg: 1.125rem;
+  --font-xl: 1.25rem;
+  --font-2xl: 1.5rem;
+  --font-3xl: 2rem;
+  --font-4xl: 2.5rem;
+
+  /* --- Spacing --- */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+  --space-3xl: 3rem;
+
+  /* --- Radius --- */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* --- Shadows --- */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-glow-green: 0 0 20px rgba(0, 230, 118, 0.2);
+  --shadow-glow-blue: 0 0 20px rgba(68, 138, 255, 0.2);
+
+  /* --- Transitions --- */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* --- Layout --- */
+  --sidebar-width: 240px;
+  --sidebar-collapsed: 70px;
+  --header-height: 60px;
+  --betslip-width: 320px;
+}
