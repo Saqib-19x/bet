@@ -1,8 +1,9 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Home, Trophy, Tv, TicketCheck, Wallet, User, Settings,
-  LayoutDashboard, Users, Receipt, Sliders, BarChart3, Zap, Shield
+  LayoutDashboard, Users, Receipt, Sliders, BarChart3, Zap, Shield, AlertTriangle
 } from 'lucide-react';
+import BrandMark from './BrandMark';
 
 const userNav = [
   { path: '/', icon: Home, label: 'Home' },
@@ -15,6 +16,7 @@ const userNav = [
 
 const adminNav = [
   { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
+  { path: '/admin/risk', icon: AlertTriangle, label: 'Risk' },
   { path: '/admin/users', icon: Users, label: 'Users' },
   { path: '/admin/bets', icon: TicketCheck, label: 'Bets' },
   { path: '/admin/odds', icon: Sliders, label: 'Odds' },
@@ -30,7 +32,9 @@ export default function Sidebar() {
   return (
     <aside className="sidebar" id="main-sidebar">
       <div className="sidebar-logo">
-        <div className="logo-icon">👑</div>
+        <div className="logo-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <BrandMark size={22} color="#0a1612" strokeWidth={2.2} />
+        </div>
         <h1>BetKing</h1>
       </div>
       <nav className="sidebar-nav">

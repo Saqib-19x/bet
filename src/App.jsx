@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './styles/global.css';
 import './styles/components.css';
 
@@ -7,6 +7,11 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import BetSlip from './components/BetSlip';
 import BottomNav from './components/BottomNav';
+import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
+import { useAuth } from './contexts/AuthContext';
+import { useSocketEvent } from './lib/socket';
+import { NotificationProvider } from './contexts/NotificationContext';
+import ToastStack from './components/ToastStack';
 
 import Home from './pages/Home';
 import Sports from './pages/Sports';
@@ -19,6 +24,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
+import RiskDashboard from './pages/admin/RiskDashboard';
 import UserManagement from './pages/admin/UserManagement';
 import BetManagement from './pages/admin/BetManagement';
 import OddsManagement from './pages/admin/OddsManagement';
@@ -26,10 +32,15 @@ import Transactions from './pages/admin/Transactions';
 import Settings from './pages/admin/Settings';
 
 function AppLayout({ selections, setSelections, betSlipOpen, setBetSlipOpen }) {
+  const { updateBalance } = useAuth();
+
+  // Realtime: balance updates from server
+  useSocketEvent('balance:update', ({ balance }) => updateBalance(balance));
+
   const addSelection = (sel) => {
-    setSelections(prev => {
-      const exists = prev.find(s => s.id === sel.id);
-      if (exists) return prev.filter(s => s.id !== sel.id);
+    setSelections((prev) => {
+      const exists = prev.find((s) => s.id === sel.id);
+      if (exists) return prev.filter((s) => s.id !== sel.id);
       return [...prev, sel];
     });
     setBetSlipOpen(true);
@@ -51,7 +62,6 @@ function AppLayout({ selections, setSelections, betSlipOpen, setBetSlipOpen }) {
         selections={selections}
         setSelections={setSelections}
       />
-      {/* Floating bet slip toggle */}
       {!betSlipOpen && selections.length > 0 && (
         <button
           onClick={() => setBetSlipOpen(true)}
@@ -83,18 +93,14 @@ function AppLayout({ selections, setSelections, betSlipOpen, setBetSlipOpen }) {
   );
 }
 
-function UserPage({ Component, addSelection }) {
-  return <Component onAddSelection={addSelection} />;
-}
-
 export default function App() {
   const [selections, setSelections] = useState([]);
   const [betSlipOpen, setBetSlipOpen] = useState(false);
 
   const addSelection = (sel) => {
-    setSelections(prev => {
-      const exists = prev.find(s => s.id === sel.id);
-      if (exists) return prev.filter(s => s.id !== sel.id);
+    setSelections((prev) => {
+      const exists = prev.find((s) => s.id === sel.id);
+      if (exists) return prev.filter((s) => s.id !== sel.id);
       return [...prev, sel];
     });
     setBetSlipOpen(true);
@@ -102,6 +108,8 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <NotificationProvider>
+      <ToastStack />
       <Routes>
         {/* Auth routes - no layout */}
         <Route path="/login" element={<Login />} />
@@ -109,12 +117,14 @@ export default function App() {
 
         {/* App routes with layout */}
         <Route element={
-          <AppLayout
-            selections={selections}
-            setSelections={setSelections}
-            betSlipOpen={betSlipOpen}
-            setBetSlipOpen={setBetSlipOpen}
-          />
+          <ProtectedRoute>
+            <AppLayout
+              selections={selections}
+              setSelections={setSelections}
+              betSlipOpen={betSlipOpen}
+              setBetSlipOpen={setBetSlipOpen}
+            />
+          </ProtectedRoute>
         }>
           <Route path="/" element={<Home onAddSelection={addSelection} />} />
           <Route path="/sports" element={<Sports onAddSelection={addSelection} />} />
@@ -125,14 +135,16 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
 
           {/* Admin routes */}
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<UserManagement />} />
-          <Route path="/admin/bets" element={<BetManagement />} />
-          <Route path="/admin/odds" element={<OddsManagement />} />
-          <Route path="/admin/transactions" element={<Transactions />} />
-          <Route path="/admin/settings" element={<Settings />} />
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+          <Route path="/admin/risk" element={<AdminRoute><RiskDashboard /></AdminRoute>} />
+          <Route path="/admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
+          <Route path="/admin/bets" element={<AdminRoute><BetManagement /></AdminRoute>} />
+          <Route path="/admin/odds" element={<AdminRoute><OddsManagement /></AdminRoute>} />
+          <Route path="/admin/transactions" element={<AdminRoute><Transactions /></AdminRoute>} />
+          <Route path="/admin/settings" element={<AdminRoute><Settings /></AdminRoute>} />
         </Route>
       </Routes>
+      </NotificationProvider>
     </BrowserRouter>
   );
 }

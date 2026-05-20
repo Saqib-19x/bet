@@ -1,9 +1,34 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { BrandLogoTile } from '../components/BrandMark';
 
 export default function Login() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const from = location.state?.from?.pathname || '/';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSubmitting(true);
+    try {
+      const user = await login(email, password);
+      navigate(user.role === 'admin' ? '/admin' : from, { replace: true });
+    } catch (err) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="auth-page" style={{
@@ -11,11 +36,7 @@ export default function Login() {
     }}>
       <div className="auth-card">
         <div className="auth-logo">
-          <div className="logo-icon" style={{
-            width: 44, height: 44, borderRadius: 'var(--radius-md)',
-            background: 'linear-gradient(135deg, var(--accent-green), #00c853)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24
-          }}>👑</div>
+          <BrandLogoTile size={44} />
           <h1>BetKing</h1>
         </div>
         <h2 style={{ textAlign: 'center', fontWeight: 700, marginBottom: '4px', fontSize: 'var(--font-xl)' }}>
@@ -25,12 +46,27 @@ export default function Login() {
           Sign in to your account to continue
         </p>
 
-        <div className="auth-form">
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {error && (
+            <div style={{
+              padding: '10px 12px', borderRadius: 'var(--radius-md)',
+              background: 'rgba(244,67,54,0.1)', color: '#f44336', fontSize: 'var(--font-sm)'
+            }}>
+              {error}
+            </div>
+          )}
           <div className="input-group">
             <label>Email</label>
             <div className="input-with-icon">
               <Mail size={16} className="input-icon" />
-              <input type="email" className="input-field" placeholder="you@example.com" />
+              <input
+                type="email"
+                className="input-field"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
           </div>
           <div className="input-group">
@@ -40,8 +76,16 @@ export default function Login() {
             </label>
             <div className="input-with-icon" style={{ position: 'relative' }}>
               <Lock size={16} className="input-icon" />
-              <input type={showPassword ? 'text' : 'password'} className="input-field" placeholder="••••••••" />
+              <input
+                type={showPassword ? 'text' : 'password'}
+                className="input-field"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
               <button
+                type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }}
               >
@@ -49,21 +93,15 @@ export default function Login() {
               </button>
             </div>
           </div>
-          <Link to="/" className="btn btn-primary btn-lg w-full" style={{ marginTop: 'var(--space-sm)' }}>
-            Sign In
-          </Link>
-        </div>
-
-        <div className="auth-divider">or continue with</div>
-
-        <div className="social-buttons">
-          <button className="social-btn">
-            <span>G</span> Google
+          <button
+            type="submit"
+            disabled={submitting}
+            className="btn btn-primary btn-lg w-full"
+            style={{ marginTop: 'var(--space-sm)' }}
+          >
+            {submitting ? 'Signing in…' : 'Sign In'}
           </button>
-          <button className="social-btn">
-            <span>📱</span> Phone
-          </button>
-        </div>
+        </form>
 
         <div className="auth-footer">
           Don't have an account? <Link to="/register">Sign Up</Link>
