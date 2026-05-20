@@ -19,6 +19,14 @@ export function getSocket() {
     auth: token ? { token } : undefined,
     transports: ['websocket', 'polling'],
     autoConnect: true,
+    // ngrok free tier shows a browser-warning HTML page on polling requests
+    // unless this header is set. Has no effect on non-ngrok hosts.
+    extraHeaders: { 'ngrok-skip-browser-warning': 'true' },
+    transportOptions: {
+      polling: {
+        extraHeaders: { 'ngrok-skip-browser-warning': 'true' },
+      },
+    },
   });
   return socket;
 }
