@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BetKing — Project Delivery Report</title>
+<style>
+  @page { size: A4; margin: 16mm 14mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1c2331; font-size: 11.5px; line-height: 1.55; margin: 0;
+  }
+  .cover {
+    background: linear-gradient(135deg, #0d1f1c 0%, #131a2e 100%);
+    color: #fff; padding: 34px 30px; border-radius: 10px; margin-bottom: 22px;
+  }
+  .cover .brand { font-size: 13px; letter-spacing: 3px; color: #00e676; font-weight: 700; text-transform: uppercase; }
+  .cover h1 { font-size: 30px; margin: 8px 0 6px; font-weight: 800; }
+  .cover .sub { color: #aeb6c6; font-size: 12.5px; }
+  .cover .pill {
+    display: inline-block; margin-top: 14px; background: rgba(0,230,118,0.15);
+    color: #00e676; border: 1px solid rgba(0,230,118,0.4);
+    padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
+  }
+  h2 {
+    font-size: 15px; color: #0d1f1c; margin: 24px 0 10px;
+    padding-bottom: 6px; border-bottom: 2px solid #ffca28;
+  }
+  h3 { font-size: 12.5px; color: #15794a; margin: 16px 0 4px; }
+  p { margin: 6px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: 11px; }
+  th { background: #131a2e; color: #fff; text-align: left; padding: 9px 10px; font-weight: 600; }
+  th.num, td.num { text-align: right; }
+  td { padding: 8px 10px; border-bottom: 1px solid #e3e7ee; vertical-align: top; }
+  tr:nth-child(even) td { background: #f7f9fc; }
+  tr.total td { background: #0d1f1c !important; color: #fff; font-weight: 800; font-size: 12px; }
+  .status { color: #15794a; font-weight: 700; white-space: nowrap; }
+  ul { margin: 5px 0; padding-left: 18px; }
+  ol { margin: 5px 0; padding-left: 20px; }
+  li { margin: 3px 0; }
+  .note { background: #fff8e1; border-left: 4px solid #ffca28; padding: 11px 14px; border-radius: 4px; margin: 12px 0; font-size: 11px; }
+  .highlight { background: #f0fff7; border-left: 4px solid #00c853; padding: 11px 14px; border-radius: 4px; margin: 12px 0; }
+  .shot { width: 100%; border: 1px solid #d9dee7; border-radius: 6px; margin: 10px 0 3px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); break-inside: avoid; }
+  .caption { font-size: 10px; color: #7a8194; margin: 0 0 14px; font-style: italic; }
+  .module { break-inside: avoid-page; }
+  .footer { margin-top: 22px; padding-top: 12px; border-top: 1px solid #e3e7ee; color: #7a8194; font-size: 10px; text-align: center; }
+  .pagebreak { page-break-before: always; }
+</style>
+</head>
+<body>
+
+  <div class="cover">
+    <div class="brand">BetKing</div>
+    <h1>Project Delivery Report</h1>
+    <div class="sub">Online Sports Betting Exchange Platform</div>
+    <div class="pill">Core platform delivered &amp; operational</div>
+  </div>
+
+  <h2>1. Overview</h2>
+  <p>This document summarises the work completed to date on the BetKing betting platform, with live
+  screenshots of every module and a short usage guide. The platform is a complete, modern web
+  application covering the full betting journey — user onboarding, live match viewing, exchange-style
+  bet placement, wallet management — plus a full administrative back office for running the operation.
+  The work below is mapped against the agreed project modules.</p>
+
+  <h2>2. Module Delivery Summary</h2>
+  <table>
+    <thead>
+      <tr><th style="width:26px">#</th><th>Module</th><th>Description</th><th class="num">Cost (INR)</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>User Management System</td><td>User registration, login, profile management, wallet system</td><td class="num">40,000</td><td class="status">Delivered</td></tr>
+      <tr><td>2</td><td>Betting Engine</td><td>Bet placement system, odds display, multi-leg bet builder, bet settlement</td><td class="num">50,000</td><td class="status">Delivered</td></tr>
+      <tr><td>3</td><td>Live Match Data Integration</td><td>Real-time match scores, live odds and event feed (sourced from third-party vendor)</td><td class="num">45,000</td><td class="status">Delivered</td></tr>
+      <tr><td>4</td><td>Admin Panel</td><td>Admin dashboard to manage users, bets, odds and platform settings</td><td class="num">40,000</td><td class="status">Delivered</td></tr>
+      <tr><td>5</td><td>Payment Gateway Integration</td><td>UPI / payment gateway integration for deposits and withdrawals</td><td class="num">25,000</td><td class="status">Delivered</td></tr>
+      <tr><td>6</td><td>Security &amp; Fraud Protection</td><td>Login security, transaction validation, anti-fraud measures</td><td class="num">20,000</td><td class="status">Delivered</td></tr>
+      <tr><td>7</td><td>Analytics &amp; Reporting</td><td>Reports for bets, users, platform revenue and activity</td><td class="num">15,000</td><td class="status">Delivered</td></tr>
+      <tr><td>8</td><td>Deployment &amp; Testing</td><td>Server setup, QA testing and production deployment</td><td class="num">15,000</td><td class="status">Delivered</td></tr>
+      <tr class="total"><td></td><td>Total</td><td></td><td class="num">2,50,000</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>Note on Module 3 — Live Match Data:</strong> The platform is fully built to receive and
+    display live scores, odds and match events in real time. The live data itself is supplied by a
+    <strong>third-party sports data vendor</strong> — a separate subscription procured from the data
+    provider. Our platform is already integrated and ready to consume this feed.
+  </div>
+
+  <h2 class="pagebreak">3. Modules with Screenshots</h2>
+
+  <div class="module">
+  <h3>Module 1 — User Management System</h3>
+  <ul>
+    <li>Secure registration &amp; login with session handling and role-based access (player / admin).</li>
+    <li>Profile management — personal details, KYC verification status, notification preferences, password change.</li>
+    <li>Integrated wallet balance shown live across the app; protected pages for logged-in users only.</li>
+  </ul>
+  <img class="shot" src="screenshots/profile.png" alt="Profile">
+  <div class="caption">Player profile — account details, KYC verification, notification settings and password change.</div>
+  </div>
+
+  <div class="module">
+  <h3>Module 2 — Betting Engine</h3>
+  <ul>
+    <li><strong>Exchange-style match screen</strong> — Back and Lay market tables with multiple price levels and traded volumes per selection.</li>
+    <li>Multiple market types per match — Match Odds, Bookmaker, Toss, Fancy and special combo markets.</li>
+    <li>One-click <strong>Place Bet panel</strong> with quick-stake chips, odds stepper and live profit / liability calculation.</li>
+    <li>Bet Slip with single bets and <strong>multi-leg bet builder</strong> (combined odds); full settlement to won / lost / cancelled.</li>
+  </ul>
+  <img class="shot" src="screenshots/match-exchange.png" alt="Exchange betting screen">
+  <div class="caption">Exchange-style match screen — Back / Lay markets, live odds, and the Place Bet &amp; My Bet panels.</div>
+  </div>
+
+  <div class="module">
+  <h3>Module 3 — Live Match Data Integration</h3>
+  <ul>
+    <li>Real-time scores and live odds movement pushed instantly to all viewers (with up / down flash indicators).</li>
+    <li>Live commentary / event feed, live match statistics, and an in-page match stream player.</li>
+    <li><em>Live data feed supplied by third-party vendor — see note on the previous page.</em></li>
+  </ul>
+  <img class="shot" src="screenshots/home.png" alt="Home with live and featured matches">
+  <div class="caption">Home — featured match, live-now section and popular sports, all driven by real-time data.</div>
+  </div>
+
+  <div class="module">
+  <h3>Module 4 — Admin Panel</h3>
+  <p>A complete back-office to run the platform: <strong>Dashboard, Risk, Users, Bets, Odds &amp; Markets, Transactions and Settings.</strong></p>
+  <img class="shot" src="screenshots/admin-dashboard.png" alt="Admin dashboard">
+  <div class="caption">Admin Dashboard — platform metrics, revenue overview and quick stats at a glance.</div>
+  <img class="shot" src="screenshots/admin-users.png" alt="User management">
+  <div class="caption">User Management — search users, adjust balances and suspend / block accounts.</div>
+  <img class="shot" src="screenshots/admin-bets.png" alt="Bet management">
+  <div class="caption">Bet Management — review every bet (singles &amp; multi-leg) and settle results.</div>
+  <img class="shot" src="screenshots/admin-odds.png" alt="Odds and markets management">
+  <div class="caption">Odds &amp; Markets — manage markets, stream, pre-match preview and live commentary per match.</div>
+  </div>
+
+  <div class="module">
+  <h3>Module 5 — Payment Gateway Integration</h3>
+  <ul>
+    <li>Wallet deposit &amp; withdrawal flows with UPI / payment-method support.</li>
+    <li>Full transaction history for users and an admin approval workflow for withdrawals.</li>
+  </ul>
+  <img class="shot" src="screenshots/wallet.png" alt="Wallet">
+  <div class="caption">Player Wallet — available balance with Deposit / Withdraw and transaction history.</div>
+  <img class="shot" src="screenshots/admin-transactions.png" alt="Admin transactions">
+  <div class="caption">Admin Transactions — monitor all deposits, withdrawals and payments; approve pending requests.</div>
+  </div>
+
+  <div class="module">
+  <h3>Module 6 — Security &amp; Fraud Protection</h3>
+  <ul>
+    <li>Token-based authentication with automatic session expiry / logout; protected routes redirect unauthorised users to login.</li>
+    <li>Server-side validation on all transactions and bet placements; balance checks prevent over-staking.</li>
+    <li>Admin controls to suspend or block suspicious accounts; admin area hidden from regular users.</li>
+  </ul>
+  <img class="shot" src="screenshots/login.png" alt="Secure login">
+  <div class="caption">Secure sign-in — gateway to all protected betting and account features.</div>
+  </div>
+
+  <div class="module">
+  <h3>Module 7 — Analytics &amp; Reporting</h3>
+  <ul>
+    <li>Revenue &amp; payout trend charts and real-time platform statistics for management.</li>
+    <li>User activity / betting volume reporting and a live <strong>Risk &amp; Exposure</strong> view.</li>
+  </ul>
+  <img class="shot" src="screenshots/admin-risk.png" alt="Risk and exposure dashboard">
+  <div class="caption">Risk &amp; Exposure — live operator view of open matches, staked amounts and worst-case liability.</div>
+  </div>
+
+  <div class="module">
+  <h3>Module 8 — Deployment &amp; Testing</h3>
+  <ul>
+    <li>Production build pipeline configured and verified; live deployment with backend connectivity.</li>
+    <li>Cross-device responsive layout — desktop, tablet and mobile — validated across core journeys.</li>
+  </ul>
+  <img class="shot" src="screenshots/sports.png" alt="Sports listing">
+  <div class="caption">Sports — browse all events by sport with quick odds; part of the QA-validated, deployed build.</div>
+  </div>
+
+  <h2 class="pagebreak">4. Quick Usage Guide</h2>
+
+  <h3>For Players</h3>
+  <ol>
+    <li><strong>Sign up / Log in</strong> — create an account or sign in from the welcome screen.</li>
+    <li><strong>Add funds</strong> — go to <em>Wallet → Deposit</em> and top up via UPI / payment method.</li>
+    <li><strong>Find a match</strong> — open <em>Sports</em> or <em>Home</em> and select an event.</li>
+    <li><strong>Place a bet</strong> — on the match screen, click a <strong>Back</strong> (blue) or <strong>Lay</strong> (pink)
+        price. The <em>Place Bet</em> panel opens — choose a quick-stake chip or type a stake, check the profit / liability, and press <strong>Submit</strong>.</li>
+    <li><strong>Combine selections</strong> — add two or more picks to the Bet Slip to create a multi-leg bet at combined odds.</li>
+    <li><strong>Track &amp; withdraw</strong> — follow bets under <em>My Bets</em>; withdraw winnings from <em>Wallet → Withdraw</em>.</li>
+  </ol>
+
+  <h3>For Administrators</h3>
+  <ol>
+    <li><strong>Open the Admin Panel</strong> — admin accounts see an <em>Admin Panel</em> link (hidden from players).</li>
+    <li><strong>Monitor the business</strong> — the <em>Dashboard</em> shows users, active bets, revenue and pending withdrawals; <em>Risk</em> shows live exposure and worst-case liability per match.</li>
+    <li><strong>Manage markets</strong> — under <em>Odds &amp; Markets</em>, add markets, set the stream, post live commentary, and suspend or settle markets.</li>
+    <li><strong>Manage users</strong> — search users, adjust balances, and suspend / block accounts under <em>Users</em>.</li>
+    <li><strong>Settle bets</strong> — review and settle results under <em>Bets</em>.</li>
+    <li><strong>Approve payments</strong> — approve or reject deposits and withdrawals under <em>Transactions</em>.</li>
+  </ol>
+
+  <h2>5. Platform Highlights</h2>
+  <div class="highlight">
+  <ul style="margin:0">
+    <li><strong>Modern, professional UI</strong> with a polished dark theme across the entire app.</li>
+    <li><strong>Real-time everywhere</strong> — odds, scores, balances and bets update live without page refresh.</li>
+    <li><strong>Exchange-grade betting experience</strong> matching leading market platforms.</li>
+    <li><strong>Fully responsive</strong> across mobile, tablet and desktop, with complete admin control.</li>
+  </ul>
+  </div>
+
+  <h2>6. Dependency Note</h2>
+  <p>To go fully live with real-time odds and scores, the platform requires a
+  <strong>live sports data feed from a third-party vendor</strong>. This is a separate recurring
+  subscription obtained from the data provider; the platform is already built and integrated to
+  receive it.</p>
+
+  <div class="footer">This report reflects the current delivered state of the BetKing platform.</div>
+
+</body>
+</html>
