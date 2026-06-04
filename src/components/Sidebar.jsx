@@ -4,6 +4,7 @@ import {
   LayoutDashboard, Users, Receipt, Sliders, BarChart3, Zap, Shield, AlertTriangle
 } from 'lucide-react';
 import BrandMark from './BrandMark';
+import { useAuth } from '../contexts/AuthContext';
 
 const userNav = [
   { path: '/', icon: Home, label: 'Home' },
@@ -26,6 +27,8 @@ const adminNav = [
 
 export default function Sidebar() {
   const location = useLocation();
+  const { user } = useAuth();
+  const isAdminUser = user?.role === 'admin';
   const isAdmin = location.pathname.startsWith('/admin');
   const nav = isAdmin ? adminNav : userNav;
 
@@ -54,7 +57,7 @@ export default function Sidebar() {
           ))}
         </div>
 
-        {!isAdmin && (
+        {!isAdmin && isAdminUser && (
           <div className="sidebar-section">
             <div className="sidebar-section-title">Quick Links</div>
             <NavLink to="/admin" className="nav-link">

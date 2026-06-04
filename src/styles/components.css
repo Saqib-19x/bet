@@ -1094,3 +1094,189 @@
   .match-header-grid { gap: var(--space-md) !important; }
   .match-header-grid > div > div { font-size: var(--font-sm) !important; }
 }
+
+/* ============================================================
+   Exchange (Betfair / Lotus365-style) market tables + bet panel
+   ============================================================ */
+:root {
+  --xch-back: #72bbef;
+  --xch-back-best: #4ba6e8;
+  --xch-lay: #f9a9ba;
+  --xch-lay-best: #f48aa0;
+  --xch-yellow: #ffca28;
+  --xch-grey: #2b3242;
+}
+
+.xch-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: var(--space-lg);
+  align-items: start;
+}
+.xch-markets-col { display: flex; flex-direction: column; gap: var(--space-lg); min-width: 0; }
+.xch-side-col { position: sticky; top: 76px; display: flex; flex-direction: column; gap: var(--space-md); }
+
+/* ---- Market block ---- */
+.xch-market {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--bg-card);
+}
+.xch-market-head {
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(180deg, #ffd24d, var(--xch-yellow));
+  color: #1a1300; font-weight: 800; letter-spacing: 0.3px;
+  padding: 8px 14px; font-size: var(--font-base); text-transform: uppercase;
+}
+.xch-market-info { color: rgba(0,0,0,0.55); }
+.xch-minmax {
+  position: relative;
+  display: flex; align-items: center;
+  background: var(--bg-tertiary); color: var(--accent-green);
+  font-size: var(--font-xs); font-weight: 600; padding: 5px 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+.xch-col-labels {
+  position: absolute; right: 0; top: 0; bottom: 0;
+  display: flex; align-items: stretch;
+}
+.xch-lbl-back, .xch-lbl-lay {
+  display: flex; align-items: center; justify-content: center;
+  width: 180px; font-weight: 800; font-size: var(--font-xs); letter-spacing: 1px;
+  color: #06243d;
+}
+.xch-lbl-back { background: var(--xch-back-best); }
+.xch-lbl-lay { background: var(--xch-lay-best); }
+
+/* ---- Runner rows ---- */
+.xch-rows { display: flex; flex-direction: column; }
+.xch-row {
+  position: relative;
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border-color);
+}
+.xch-row:last-child { border-bottom: none; }
+.xch-runner {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; min-width: 0;
+}
+.xch-runner-name {
+  font-size: var(--font-base); font-weight: 600; color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.xch-runner-pnl { font-size: var(--font-xs); font-weight: 700; }
+
+.xch-ladder { display: grid; grid-template-columns: repeat(6, 60px); }
+.xch-cell {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  border: none; border-left: 1px solid rgba(0,0,0,0.12);
+  color: #06243d; font-family: var(--font-family);
+  padding: 6px 2px; transition: filter 120ms ease, transform 120ms ease;
+}
+.xch-cell:not(:disabled):hover { filter: brightness(1.08); }
+.xch-cell:not(:disabled):active { transform: scale(0.96); }
+.xch-cell-price { font-size: var(--font-base); font-weight: 800; line-height: 1.1; }
+.xch-cell-size { font-size: 10px; font-weight: 500; opacity: 0.8; }
+.xch-cell-flash { animation: xchFlash 0.8s ease; }
+@keyframes xchFlash { 0% { filter: brightness(1.5); } 100% { filter: brightness(1); } }
+
+.xch-row-suspended .xch-ladder { filter: grayscale(0.7) brightness(0.7); }
+.xch-suspended-overlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(10,12,18,0.55); color: var(--accent-yellow);
+  font-size: var(--font-sm); font-weight: 800; letter-spacing: 2px; pointer-events: none;
+}
+
+/* ---- Place Bet panel ---- */
+.xch-betpanel, .xch-mybet {
+  border: 1px solid var(--border-color); border-radius: var(--radius-md);
+  overflow: hidden; background: var(--bg-card);
+}
+.xch-betpanel-head, .xch-mybet-head {
+  background: linear-gradient(180deg, #1ea362, #16794a);
+  color: #fff; font-weight: 800; padding: 8px 14px; font-size: var(--font-base);
+}
+.xch-mybet-head { background: linear-gradient(180deg, #2a8f57, #1c6b41); }
+.xch-betpanel-placeholder, .xch-mybet-empty {
+  padding: 18px 14px; color: var(--text-secondary); font-size: var(--font-sm); text-align: center;
+}
+.xch-betform { padding: 10px; background: var(--xch-back); }
+.xch-form-lay { background: var(--xch-lay); }
+.xch-betform-grid {
+  display: grid; grid-template-columns: 1fr 84px 84px 52px; gap: 6px; align-items: center;
+}
+.xch-betform-labels { font-size: 10px; font-weight: 800; color: #06243d; text-transform: uppercase; margin-bottom: 5px; }
+.xch-form-lay .xch-betform-labels { color: #3d0c18; }
+.xch-sel {
+  display: flex; align-items: center; gap: 6px; min-width: 0;
+  font-size: var(--font-sm); font-weight: 700; color: #06243d;
+}
+.xch-form-lay .xch-sel { color: #3d0c18; }
+.xch-sel span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.xch-sel-x {
+  display: inline-flex; flex: none; border: none; cursor: pointer;
+  background: var(--accent-red); color: #fff; border-radius: 3px; padding: 1px;
+}
+.xch-stepper { position: relative; display: flex; }
+.xch-stepper input {
+  width: 100%; padding: 5px 18px 5px 7px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.25);
+  background: #fff; color: #06243d; font-weight: 700; font-size: var(--font-sm);
+}
+.xch-stepper-btns { position: absolute; right: 2px; top: 1px; bottom: 1px; display: flex; flex-direction: column; }
+.xch-stepper-btns button {
+  flex: 1; border: none; background: #d7dde6; color: #06243d; cursor: pointer;
+  font-size: 7px; line-height: 1; padding: 0 4px; border-radius: 2px; margin: 0.5px;
+}
+.xch-stakeinput {
+  width: 100%; padding: 5px 7px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.25);
+  background: #fff; color: #06243d; font-weight: 700; font-size: var(--font-sm);
+}
+.xch-profit { font-size: var(--font-base); font-weight: 800; color: #06243d; text-align: right; }
+.xch-form-lay .xch-profit { color: #3d0c18; }
+
+.xch-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 9px; }
+.xch-chips button {
+  padding: 7px 4px; border: none; border-radius: 4px; cursor: pointer;
+  background: var(--xch-grey); color: #fff; font-weight: 700; font-size: var(--font-xs);
+  transition: filter 120ms ease;
+}
+.xch-chips button:hover { filter: brightness(1.25); }
+.xch-chip-clear { background: var(--accent-red) !important; }
+
+.xch-msg { margin-top: 8px; padding: 6px 9px; border-radius: 4px; font-size: var(--font-xs); font-weight: 600; }
+.xch-msg-ok { background: rgba(0,0,0,0.15); color: #06351f; }
+.xch-msg-err { background: rgba(180,0,0,0.18); color: #5c0000; }
+
+.xch-betform-actions { display: flex; gap: 8px; margin-top: 10px; }
+.xch-reset, .xch-submit { flex: 1; padding: 9px; border: none; border-radius: 5px; cursor: pointer; font-weight: 800; font-size: var(--font-sm); }
+.xch-reset { background: #eceff3; color: #1a2230; }
+.xch-submit { background: linear-gradient(180deg, #25b06b, #178a50); color: #fff; }
+.xch-submit:disabled { opacity: 0.6; cursor: default; }
+
+/* ---- My Bet list ---- */
+.xch-mybet-rows { display: flex; flex-direction: column; }
+.xch-mybet-row {
+  display: grid; grid-template-columns: 1fr 56px 56px; gap: 6px; align-items: center;
+  padding: 7px 12px; font-size: var(--font-sm); border-bottom: 1px solid var(--border-color);
+}
+.xch-mybet-rowhead { color: var(--text-tertiary); font-size: var(--font-xs); font-weight: 700; text-transform: uppercase; }
+.xch-mybet-back { background: rgba(114,187,239,0.14); }
+.xch-mybet-lay { background: rgba(249,169,186,0.14); }
+.xch-mybet-sel { display: flex; flex-direction: column; min-width: 0; font-weight: 600; }
+.xch-mybet-sel small { color: var(--text-tertiary); font-weight: 400; font-size: 10px; }
+.xch-mybet-row > span:not(.xch-mybet-sel) { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---- Responsive: collapse to best back/lay + stack panel ---- */
+@media (max-width: 1024px) {
+  .xch-layout { grid-template-columns: 1fr; }
+  .xch-side-col { position: static; }
+}
+@media (max-width: 640px) {
+  .xch-ladder { grid-template-columns: repeat(6, 1fr); }
+  .xch-cell:nth-child(1), .xch-cell:nth-child(2),
+  .xch-cell:nth-child(5), .xch-cell:nth-child(6) { display: none; }
+  .xch-ladder { grid-template-columns: repeat(2, 1fr); min-width: 120px; }
+  .xch-lbl-back, .xch-lbl-lay { width: 60px; }
+}
