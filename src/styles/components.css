@@ -1190,6 +1190,18 @@
   font-size: var(--font-sm); font-weight: 800; letter-spacing: 2px; pointer-events: none;
 }
 
+/* ---- Market category filter chips ---- */
+.xch-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--space-lg); position: sticky; top: 0; z-index: 5;
+  background: var(--bg-primary); padding: 6px 0; }
+.xch-filter-chip {
+  padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border-color);
+  background: var(--bg-secondary); color: var(--text-secondary);
+  font-size: var(--font-sm); font-weight: 600; cursor: pointer; white-space: nowrap;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.xch-filter-chip:hover { color: var(--text-primary); }
+.xch-filter-chip.active { background: var(--accent-green); color: #0a1612; border-color: var(--accent-green); }
+
 /* ---- Fancy / session market: single price per side, rendered as two cells ---- */
 .xch-fancy { display: grid; grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); gap: 8px; padding: 10px 12px; position: relative; }
 .xch-fancy-cell {

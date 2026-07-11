@@ -313,33 +313,12 @@ export default function MatchDetail() {
       {/* Live stats banner — always visible across tabs when match is live */}
       {match.status === 'live' && <LiveStatsPanel liveStats={match.liveStats} />}
 
-      {/* Tab navigation */}
-      <TabBar
-        active={activeTab}
-        onChange={setActiveTab}
-        tabs={[
-          { id: 'markets', label: 'Markets', count: markets.length },
-          { id: 'stats', label: 'Stats' },
-          { id: 'feed', label: 'Feed', count: (match.commentary || []).length || null, dot: match.status === 'live' },
-        ]}
+      <ExchangeMarkets
+        markets={[...mainMarkets, ...fancyMarkets]}
+        match={match}
+        teamA={teamA}
+        teamB={teamB}
       />
-
-      {activeTab === 'markets' && (
-        <ExchangeMarkets
-          markets={[...mainMarkets, ...fancyMarkets]}
-          match={match}
-          teamA={teamA}
-          teamB={teamB}
-        />
-      )}
-
-      {activeTab === 'stats' && (
-        <MatchStatsPanel matchId={id} match={match} />
-      )}
-
-      {activeTab === 'feed' && (
-        <CommentaryFeed matchId={id} initialEntries={match.commentary || []} />
-      )}
     </div>
   );
 }

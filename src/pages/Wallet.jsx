@@ -53,7 +53,7 @@ export default function Wallet() {
       const fn = mode === 'deposit' ? walletApi.deposit : walletApi.withdraw;
       const result = await fn({ amount: amt, method: methodLabels[method] });
       updateBalance(result.balance);
-      setSuccess(result.message || `${mode === 'deposit' ? 'Deposited' : 'Withdrawal requested'} ₹${amt.toLocaleString('en-IN')}.`);
+      setSuccess(result.message || `${mode === 'deposit' ? 'Deposit requested — pending admin approval' : 'Withdrawal requested'} · ₹${amt.toLocaleString('en-IN')}.`);
       setAmount('');
       loadTransactions();
     } catch (err) {

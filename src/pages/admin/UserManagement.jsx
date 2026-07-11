@@ -54,10 +54,66 @@ export default function UserManagement() {
     }
   };
 
+  const [showCreate, setShowCreate] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', balance: '' });
+  const [creating, setCreating] = useState(false);
+  const [createMsg, setCreateMsg] = useState(null);
+
+  const createUser = async (e) => {
+    e.preventDefault();
+    setCreateMsg(null);
+    if (!form.name || !form.email || !form.password) {
+      setCreateMsg({ type: 'err', text: 'Name, email and password are required.' });
+      return;
+    }
+    setCreating(true);
+    try {
+      await adminApi.createUser({
+        name: form.name, email: form.email, phone: form.phone,
+        password: form.password, balance: parseFloat(form.balance) || 0,
+      });
+      setCreateMsg({ type: 'ok', text: `User "${form.name}" created.` });
+      setForm({ name: '', email: '', phone: '', password: '', balance: '' });
+      setShowCreate(false);
+      load();
+    } catch (err) {
+      setCreateMsg({ type: 'err', text: err.message });
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const setF = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
   return (
     <div className="animate-fade-in">
-      <h1 className="page-title">User Management</h1>
-      <p className="page-subtitle">Manage registered users and their accounts</p>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
+        <div>
+          <h1 className="page-title">User Management</h1>
+          <p className="page-subtitle">Manage registered users and their accounts</p>
+        </div>
+        <button className="btn btn-primary" onClick={() => { setShowCreate((s) => !s); setCreateMsg(null); }}>
+          <Plus size={16} /> New User
+        </button>
+      </div>
+
+      {showCreate && (
+        <form className="card" onSubmit={createUser} style={{ marginBottom: 'var(--space-lg)', display: 'grid', gap: 'var(--space-md)' }}>
+          <div style={{ fontWeight: 700 }}>Create User</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 'var(--space-md)' }}>
+            <input className="input-field" placeholder="Full name *" value={form.name} onChange={setF('name')} />
+            <input className="input-field" type="email" placeholder="Email *" value={form.email} onChange={setF('email')} />
+            <input className="input-field" placeholder="Phone" value={form.phone} onChange={setF('phone')} />
+            <input className="input-field" type="password" placeholder="Password * (min 6)" value={form.password} onChange={setF('password')} />
+            <input className="input-field" type="number" placeholder="Opening balance ₹ (optional)" value={form.balance} onChange={setF('balance')} />
+          </div>
+          {createMsg && <div style={{ color: createMsg.type === 'ok' ? 'var(--accent-green)' : '#f44336', fontSize: 'var(--font-sm)' }}>{createMsg.text}</div>}
+          <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+            <button type="submit" className="btn btn-primary" disabled={creating}>{creating ? 'Creating…' : 'Create User'}</button>
+            <button type="button" className="btn btn-secondary" onClick={() => setShowCreate(false)}>Cancel</button>
+          </div>
+        </form>
+      )}
 
       <div className="admin-toolbar">
         <div style={{ display: 'flex', gap: 'var(--space-md)', flex: 1, flexWrap: 'wrap' }}>

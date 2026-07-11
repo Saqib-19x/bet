@@ -7,6 +7,17 @@ import TeamLogo from '../TeamLogo';
 
 const QUICK_STAKES = [100, 500, 1000, 5000, 25000, 50000, 100000];
 
+// Market category (for the filter chips) — lets users jump to a type without scrolling.
+const CATEGORY_ORDER = ['Match Odds', 'Bookmaker', 'Fancy', 'Line', 'Odd/Even', 'Number'];
+function marketCategory(m) {
+  if (m.type === 'match_winner') return 'Match Odds';
+  if (m.type === 'bookmaker') return 'Bookmaker';
+  if (m.externalGtype === 'fancy2') return 'Line';
+  if (m.externalGtype === 'oddeven') return 'Odd/Even';
+  if (m.externalGtype === 'cricketcasino') return 'Number';
+  return 'Fancy';
+}
+
 // ---------- One ladder cell (a single back or lay price) ----------
 function LadderCell({ data, side, best, disabled, onClick, flash }) {
   const isBack = side === 'back';
@@ -337,6 +348,16 @@ export default function ExchangeMarkets({ markets, match, teamA, teamB }) {
     });
   }, [markets]);
 
+  const [cat, setCat] = useState('All');
+  const cats = useMemo(
+    () => ['All', ...CATEGORY_ORDER.filter((c) => (markets || []).some((m) => marketCategory(m) === c))],
+    [markets]
+  );
+  const shown = useMemo(
+    () => (cat === 'All' || !cats.includes(cat) ? ordered : ordered.filter((m) => marketCategory(m) === cat)),
+    [ordered, cat, cats]
+  );
+
   if (!markets || markets.length === 0) {
     return <div className="card" style={{ color: 'var(--text-secondary)' }}>No markets available for this match yet.</div>;
   }
@@ -344,7 +365,16 @@ export default function ExchangeMarkets({ markets, match, teamA, teamB }) {
   return (
     <div className="xch-layout">
       <div className="xch-markets-col">
-        {ordered.map((m) => (
+        {cats.length > 2 && (
+          <div className="xch-filter">
+            {cats.map((c) => (
+              <button key={c} type="button" className={`xch-filter-chip${cat === c ? ' active' : ''}`} onClick={() => setCat(c)}>
+                {c}{c === 'All' ? ` · ${ordered.length}` : ''}
+              </button>
+            ))}
+          </div>
+        )}
+        {shown.map((m) => (
           m.isFancy
             ? <FancyBlock key={m._id} market={m} match={match} teamA={teamA} teamB={teamB} onPick={setActiveBet} />
             : <MarketBlock key={m._id} market={m} match={match} teamA={teamA} teamB={teamB} onPick={setActiveBet} />

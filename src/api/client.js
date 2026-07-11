@@ -91,6 +91,7 @@ export const admin = {
   marketExposure: (id) => unwrap(client.get(`/admin/markets/${id}/exposure`)),
   // Users
   users: (params) => unwrap(client.get('/admin/users', { params })),
+  createUser: (data) => unwrap(client.post('/admin/users', data)),
   updateUserStatus: (id, status) => unwrap(client.put(`/admin/users/${id}/status`, { status })),
   adjustBalance: (id, data) => unwrap(client.put(`/admin/users/${id}/balance`, data)),
   // Bets
