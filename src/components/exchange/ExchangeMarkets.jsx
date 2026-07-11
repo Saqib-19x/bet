@@ -119,43 +119,50 @@ function MarketBlock({ market, match, teamA, teamB, onPick }) {
 // Fancy markets quote one run-line per side: a "No" (lay, under the line) and a
 // "Yes" (back, over the line), each at a single price. Rendered as two big cells
 // rather than a sparse 3+3 grid.
-// One fancy side (YES/back or NO/lay). Pulses when its line or price changes.
-function FancyCell({ opt, side, suspended, onPick }) {
-  const price = opt ? (side === 'back' ? (opt.backOdds ?? opt.odds) : (opt.layOdds ?? opt.odds)) : null;
-  const line = opt?.line ?? null;
-  const sig = `${line}|${price}`;
+// Tidy a runner label for display: "0 Number" → "0", "Back 141" → "141" (when no
+// line), leave "Odd"/"Even"/team names alone.
+function cleanRunnerLabel(label) {
+  return String(label || '').replace(/\s*Number$/i, '').replace(/^(Back|Lay)\s+/i, '').trim();
+}
+
+// One fancy runner cell. Derives its back/lay side from the option, shows its run
+// line (or a short label) + price, and pulses when line or price changes.
+function FancyCell({ opt, suspended, onPick }) {
+  const isLay = opt.layOdds != null && opt.backOdds == null;
+  const side = isLay ? 'lay' : 'back';
+  const price = isLay ? (opt.layOdds ?? opt.odds) : (opt.backOdds ?? opt.odds);
+  const display = opt.line != null ? opt.line : cleanRunnerLabel(opt.label);
+  const tag = opt.line != null ? (side === 'back' ? 'YES' : 'NO') : null;
+
+  const sig = `${opt.line}|${price}`;
   const [prevSig, setPrevSig] = useState(sig);
   const [flash, setFlash] = useState(false);
-  // Set-state-on-changed-prop pattern (same as the Match Odds ladder cells).
-  if (opt && sig !== prevSig) { setFlash(true); setPrevSig(sig); }
+  if (sig !== prevSig) { setFlash(true); setPrevSig(sig); }
   useEffect(() => {
     if (!flash) return undefined;
     const t = setTimeout(() => setFlash(false), 800);
     return () => clearTimeout(t);
   }, [flash]);
 
-  if (!opt) return <div className="xch-fancy-cell xch-fancy-empty" />;
   return (
     <button type="button" className={`xch-fancy-cell ${side}${flash ? ' xch-cell-flash' : ''}`}
       disabled={suspended || price == null}
       onClick={() => price != null && onPick(opt, side, price)}>
-      <span className="xch-fancy-tag">{side === 'back' ? 'YES' : 'NO'}</span>
-      <span className="xch-fancy-run">{line != null ? line : '—'}</span>
+      {tag && <span className="xch-fancy-tag">{tag}</span>}
+      <span className="xch-fancy-run">{display !== '' && display != null ? display : '—'}</span>
       <span className="xch-fancy-price">@ {price != null ? price.toFixed(2) : '—'}</span>
     </button>
   );
 }
 
+// Any isFancy market (session / line / odd-even / meter / number) — renders all its
+// runners as a responsive grid of cells.
 function FancyBlock({ market, match, teamA, teamB, onPick }) {
-  const backOpt = market.options.find((o) => o.backOdds != null) || market.options.find((o) => /^back/i.test(o.label));
-  const layOpt = market.options.find((o) => o.layOdds != null) || market.options.find((o) => /^lay/i.test(o.label));
   const suspended = market.status !== 'open';
-
   const pick = (opt, side, price) => onPick({
     marketId: market._id, optionId: opt._id, selection: opt.label, marketName: market.name,
     side, price, matchId: match._id, match: `${teamA} vs ${teamB}`,
   });
-
   return (
     <div className="xch-market">
       <div className="xch-market-head">
@@ -166,8 +173,9 @@ function FancyBlock({ market, match, teamA, teamB, onPick }) {
         Min: ₹{market.minStake ?? 100} &nbsp; Max: ₹{(market.maxStake || 0).toLocaleString('en-IN')}
       </div>
       <div className={`xch-fancy${suspended ? ' xch-row-suspended' : ''}`}>
-        <FancyCell opt={backOpt} side="back" suspended={suspended} onPick={pick} />
-        <FancyCell opt={layOpt} side="lay" suspended={suspended} onPick={pick} />
+        {market.options.map((o) => (
+          <FancyCell key={o._id} opt={o} suspended={suspended} onPick={pick} />
+        ))}
         {suspended && <div className="xch-suspended-overlay">SUSPENDED</div>}
       </div>
     </div>
@@ -297,6 +305,23 @@ function MyBetList({ bets: placed }) {
 export default function ExchangeMarkets({ markets, match, teamA, teamB }) {
   const [activeBet, setActiveBet] = useState(null);
   const [placed, setPlaced] = useState([]);
+
+  // Load the user's persisted OPEN bets for this match so the "My Bet" list
+  // survives a refresh (it's not just session state).
+  useEffect(() => {
+    let alive = true;
+    if (!match?._id) return undefined;
+    bets.list({ status: 'open', limit: 100 })
+      .then((res) => {
+        if (!alive) return;
+        const mine = (res.bets || [])
+          .filter((b) => String(b.matchId) === String(match._id))
+          .map((b) => ({ id: b._id, selection: b.selection, marketName: b.marketName, side: b.side || 'back', odds: b.odds, stake: b.stake }));
+        setPlaced(mine);
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [match?._id]);
 
   // Active markets float to the top, suspended sink to the bottom (settled last),
   // so bettable markets are always in view. Reflows live as markets toggle.
