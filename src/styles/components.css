@@ -1190,6 +1190,25 @@
   font-size: var(--font-sm); font-weight: 800; letter-spacing: 2px; pointer-events: none;
 }
 
+/* ---- Fancy / session market: single price per side, rendered as two cells ---- */
+.xch-fancy { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; position: relative; }
+.xch-fancy-cell {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  border: none; border-radius: 8px; padding: 10px 8px; cursor: pointer;
+  color: #06243d; font-family: var(--font-family);
+  transition: filter 120ms ease, transform 120ms ease;
+}
+.xch-fancy-cell.back { background: var(--xch-back); }
+.xch-fancy-cell.lay  { background: var(--xch-lay); }
+.xch-fancy-cell:not(:disabled):hover { filter: brightness(1.08); }
+.xch-fancy-cell:not(:disabled):active { transform: scale(0.98); }
+.xch-fancy-cell:disabled { cursor: default; }
+.xch-fancy-empty { background: transparent; }
+.xch-fancy-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; opacity: 0.65; }
+.xch-fancy-run { font-size: 20px; font-weight: 800; line-height: 1.05; }
+.xch-fancy-price { font-size: 12px; font-weight: 600; opacity: 0.85; }
+.xch-row-suspended.xch-fancy { filter: grayscale(0.7) brightness(0.7); }
+
 /* ---- Place Bet panel ---- */
 .xch-betpanel, .xch-mybet {
   border: 1px solid var(--border-color); border-radius: var(--radius-md);

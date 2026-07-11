@@ -299,7 +299,7 @@ export default function MatchDetail() {
             title="Live score"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            style={{ width: '100%', height: 150, border: 'none', display: 'block', background: '#0b1220' }}
+            style={{ width: '100%', height: 200, border: 'none', display: 'block', background: '#0b1220' }}
           />
         </div>
       )}
