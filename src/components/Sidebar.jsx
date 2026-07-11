@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Home, Trophy, Tv, TicketCheck, Wallet, User, Settings,
@@ -5,11 +6,12 @@ import {
 } from 'lucide-react';
 import BrandMark from './BrandMark';
 import { useAuth } from '../contexts/AuthContext';
+import { matches as matchesApi } from '../api/client';
 
 const userNav = [
   { path: '/', icon: Home, label: 'Home' },
   { path: '/sports', icon: Trophy, label: 'Sports' },
-  { path: '/live', icon: Tv, label: 'Live Betting', badge: '5' },
+  { path: '/live', icon: Tv, label: 'Live Betting' },
   { path: '/my-bets', icon: TicketCheck, label: 'My Bets' },
   { path: '/wallet', icon: Wallet, label: 'Wallet' },
   { path: '/profile', icon: User, label: 'Profile' },
@@ -32,6 +34,18 @@ export default function Sidebar() {
   const isAdmin = location.pathname.startsWith('/admin');
   const nav = isAdmin ? adminNav : userNav;
 
+  // Live match count for the "Live Betting" badge — real, not hardcoded.
+  const [liveCount, setLiveCount] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    const load = () => matchesApi.live()
+      .then((res) => { if (alive) setLiveCount((res.matches || []).length); })
+      .catch(() => {});
+    load();
+    const t = setInterval(load, 30000);
+    return () => { alive = false; clearInterval(t); };
+  }, []);
+
   return (
     <aside className="sidebar" id="main-sidebar">
       <div className="sidebar-logo">
@@ -43,18 +57,21 @@ export default function Sidebar() {
       <nav className="sidebar-nav">
         <div className="sidebar-section">
           <div className="sidebar-section-title">{isAdmin ? 'Admin' : 'Menu'}</div>
-          {nav.map(item => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.path === '/' || item.path === '/admin'}
-              className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-            >
-              <item.icon size={18} />
-              <span>{item.label}</span>
-              {item.badge && <span className="nav-badge">{item.badge}</span>}
-            </NavLink>
-          ))}
+          {nav.map(item => {
+            const badge = item.path === '/live' ? (liveCount > 0 ? String(liveCount) : null) : item.badge;
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.path === '/' || item.path === '/admin'}
+                className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+              >
+                <item.icon size={18} />
+                <span>{item.label}</span>
+                {badge && <span className="nav-badge">{badge}</span>}
+              </NavLink>
+            );
+          })}
         </div>
 
         {!isAdmin && isAdminUser && (
