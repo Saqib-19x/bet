@@ -67,14 +67,20 @@ export default function MatchDetail() {
   useSocketEvent('odds:update', (payload) => {
     setMarkets((prev) => prev.map((m) =>
       m._id === payload.marketId
-        ? { ...m, name: payload.marketName, options: m.options.map((o, i) => ({ ...o, ...payload.options[i] })) }
+        ? { ...m, name: payload.marketName, status: payload.status ?? m.status, options: m.options.map((o, i) => ({ ...o, ...payload.options[i] })) }
         : m
     ));
   });
 
   useSocketEvent('market:suspended', (payload) => {
     setMarkets((prev) => prev.map((m) =>
-      m._id === payload.marketId ? { ...m, status: payload.suspended ? 'suspended' : 'open' } : m
+      m._id === payload.marketId ? { ...m, status: 'suspended' } : m
+    ));
+  });
+
+  useSocketEvent('market:resumed', (payload) => {
+    setMarkets((prev) => prev.map((m) =>
+      m._id === payload.marketId ? { ...m, status: 'open' } : m
     ));
   });
 

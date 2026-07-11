@@ -119,6 +119,33 @@ function MarketBlock({ market, match, teamA, teamB, onPick }) {
 // Fancy markets quote one run-line per side: a "No" (lay, under the line) and a
 // "Yes" (back, over the line), each at a single price. Rendered as two big cells
 // rather than a sparse 3+3 grid.
+// One fancy side (YES/back or NO/lay). Pulses when its line or price changes.
+function FancyCell({ opt, side, suspended, onPick }) {
+  const price = opt ? (side === 'back' ? (opt.backOdds ?? opt.odds) : (opt.layOdds ?? opt.odds)) : null;
+  const line = opt?.line ?? null;
+  const sig = `${line}|${price}`;
+  const [prevSig, setPrevSig] = useState(sig);
+  const [flash, setFlash] = useState(false);
+  // Set-state-on-changed-prop pattern (same as the Match Odds ladder cells).
+  if (opt && sig !== prevSig) { setFlash(true); setPrevSig(sig); }
+  useEffect(() => {
+    if (!flash) return undefined;
+    const t = setTimeout(() => setFlash(false), 800);
+    return () => clearTimeout(t);
+  }, [flash]);
+
+  if (!opt) return <div className="xch-fancy-cell xch-fancy-empty" />;
+  return (
+    <button type="button" className={`xch-fancy-cell ${side}${flash ? ' xch-cell-flash' : ''}`}
+      disabled={suspended || price == null}
+      onClick={() => price != null && onPick(opt, side, price)}>
+      <span className="xch-fancy-tag">{side === 'back' ? 'YES' : 'NO'}</span>
+      <span className="xch-fancy-run">{line != null ? line : '—'}</span>
+      <span className="xch-fancy-price">@ {price != null ? price.toFixed(2) : '—'}</span>
+    </button>
+  );
+}
+
 function FancyBlock({ market, match, teamA, teamB, onPick }) {
   const backOpt = market.options.find((o) => o.backOdds != null) || market.options.find((o) => /^back/i.test(o.label));
   const layOpt = market.options.find((o) => o.layOdds != null) || market.options.find((o) => /^lay/i.test(o.label));
@@ -128,19 +155,6 @@ function FancyBlock({ market, match, teamA, teamB, onPick }) {
     marketId: market._id, optionId: opt._id, selection: opt.label, marketName: market.name,
     side, price, matchId: match._id, match: `${teamA} vs ${teamB}`,
   });
-
-  const Cell = ({ opt, side }) => {
-    if (!opt) return <div className="xch-fancy-cell xch-fancy-empty" />;
-    const price = side === 'back' ? (opt.backOdds ?? opt.odds) : (opt.layOdds ?? opt.odds);
-    return (
-      <button type="button" className={`xch-fancy-cell ${side}`} disabled={suspended || price == null}
-        onClick={() => price != null && pick(opt, side, price)}>
-        <span className="xch-fancy-tag">{side === 'back' ? 'YES' : 'NO'}</span>
-        <span className="xch-fancy-run">{opt.line != null ? opt.line : '—'}</span>
-        <span className="xch-fancy-price">@ {price != null ? price.toFixed(2) : '—'}</span>
-      </button>
-    );
-  };
 
   return (
     <div className="xch-market">
@@ -152,8 +166,8 @@ function FancyBlock({ market, match, teamA, teamB, onPick }) {
         Min: ₹{market.minStake ?? 100} &nbsp; Max: ₹{(market.maxStake || 0).toLocaleString('en-IN')}
       </div>
       <div className={`xch-fancy${suspended ? ' xch-row-suspended' : ''}`}>
-        <Cell opt={backOpt} side="back" />
-        <Cell opt={layOpt} side="lay" />
+        <FancyCell opt={backOpt} side="back" suspended={suspended} onPick={pick} />
+        <FancyCell opt={layOpt} side="lay" suspended={suspended} onPick={pick} />
         {suspended && <div className="xch-suspended-overlay">SUSPENDED</div>}
       </div>
     </div>
