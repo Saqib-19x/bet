@@ -1167,6 +1167,7 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .xch-runner-pnl { font-size: var(--font-xs); font-weight: 700; }
+.xch-runner-line { font-size: var(--font-xs); font-weight: 600; color: var(--text-secondary); }
 
 .xch-ladder { display: grid; grid-template-columns: repeat(6, 60px); }
 .xch-cell {

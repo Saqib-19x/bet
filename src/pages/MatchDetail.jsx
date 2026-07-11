@@ -291,6 +291,19 @@ export default function MatchDetail() {
         );
       })()}
 
+      {/* Live score — Diamond's embeddable scoreboard widget (iframe, keyed by gmid) */}
+      {match.scoreWidgetUrl && match.status === 'live' && (
+        <div className="card" style={{ padding: 0, overflow: 'hidden', marginBottom: 'var(--space-xl)' }}>
+          <iframe
+            src={match.scoreWidgetUrl}
+            title="Live score"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            style={{ width: '100%', height: 150, border: 'none', display: 'block', background: '#0b1220' }}
+          />
+        </div>
+      )}
+
       {/* Live stats banner — always visible across tabs when match is live */}
       {match.status === 'live' && <LiveStatsPanel liveStats={match.liveStats} />}
 

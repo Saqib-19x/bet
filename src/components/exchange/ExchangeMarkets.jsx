@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Info, X } from 'lucide-react';
-import { buildLadder, fmtSize, seedFrom, stepUp, stepDown } from '../../lib/exchangeOdds';
+import { ladderFromOption, fmtSize, stepUp, stepDown } from '../../lib/exchangeOdds';
 import { bets } from '../../api/client';
 import { useAuth } from '../../contexts/AuthContext';
 import TeamLogo from '../TeamLogo';
@@ -22,16 +22,16 @@ function LadderCell({ data, side, best, disabled, onClick, flash }) {
       onClick={() => !empty && onClick(data.price)}
       style={{ background: bg, opacity: disabled ? 0.4 : 1, cursor: empty || disabled ? 'default' : 'pointer' }}
     >
-      <span className="xch-cell-price">{empty ? '-' : data.price.toFixed(2)}</span>
-      <span className="xch-cell-size">{empty ? '0.0' : fmtSize(data.size)}</span>
+      <span className="xch-cell-price">{empty ? '–' : data.price.toFixed(2)}</span>
+      <span className="xch-cell-size">{empty ? '' : fmtSize(data.size)}</span>
     </button>
   );
 }
 
 // ---------- One runner row (a selection: team / player / yes-no) ----------
 function RunnerRow({ option, market, match, teamA, teamB, onPick }) {
-  const seed = seedFrom(option._id || option.label);
-  const ladder = useMemo(() => buildLadder(option.odds, seed), [option.odds, seed]);
+  // Real mirrored ladder from the API (no synthesis).
+  const ladder = useMemo(() => ladderFromOption(option), [option]);
   // Track previous odds as state (React's "info from previous render" pattern):
   // setState during render with a changed value is allowed and re-renders once,
   // staying clear of both the set-state-in-effect and refs-in-render lint rules.
@@ -51,11 +51,8 @@ function RunnerRow({ option, market, match, teamA, teamB, onPick }) {
     || (option.status && option.status !== 'open');
   const teamLogo = option.label === teamA ? match.teamA?.logo : option.label === teamB ? match.teamB?.logo : null;
   const isTeam = option.label === teamA || option.label === teamB;
-  // synthetic book P&L exposure shown under the runner name (green/red)
-  const pnl = useMemo(() => {
-    const v = ((seed % 900) + 100) * (seed % 2 ? 1 : -1);
-    return v;
-  }, [seed]);
+  // Fancy run-line (e.g. "15 over run" line 34) shown under the selection name.
+  const line = option.line != null ? option.line : null;
 
   const pick = (side, price) => onPick({
     marketId: market._id,
@@ -75,9 +72,7 @@ function RunnerRow({ option, market, match, teamA, teamB, onPick }) {
         {option.playerId && option.playerPhoto && <TeamLogo name={option.label} logo={option.playerPhoto} size={22} />}
         <div style={{ minWidth: 0 }}>
           <div className="xch-runner-name">{option.label}</div>
-          <div className="xch-runner-pnl" style={{ color: pnl >= 0 ? 'var(--accent-green)' : 'var(--accent-red)' }}>
-            {pnl >= 0 ? `+${pnl}` : pnl}
-          </div>
+          {line != null && <div className="xch-runner-line">Line: {line}</div>}
         </div>
       </div>
       <div className="xch-ladder">
@@ -146,12 +141,14 @@ function PlaceBetPanel({ bet, onClose, onPlaced }) {
   const stakeNum = parseFloat(stake) || 0;
   const profit = stakeNum > 0 && odds > 1 ? stakeNum * (odds - 1) : 0;       // back profit
   const liability = stakeNum > 0 && odds > 1 ? stakeNum * (odds - 1) : 0;     // lay liability
+  // Amount actually at risk / debited: stake for a back, liability for a lay.
+  const atRisk = isBack ? stakeNum : liability;
 
   const submit = async () => {
     setMsg(null);
     if (stakeNum <= 0) { setMsg({ type: 'err', text: 'Enter a stake.' }); return; }
-    if (stakeNum > (user?.balance ?? 0)) {
-      setMsg({ type: 'err', text: `Insufficient balance (₹${(user?.balance ?? 0).toLocaleString('en-IN')}).` });
+    if (atRisk > (user?.balance ?? 0)) {
+      setMsg({ type: 'err', text: `Insufficient balance (₹${(user?.balance ?? 0).toLocaleString('en-IN')}). This lay risks ₹${atRisk.toLocaleString('en-IN')}.` });
       return;
     }
     setSubmitting(true);

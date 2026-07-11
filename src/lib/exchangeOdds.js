@@ -1,10 +1,12 @@
-// ===== Betfair / Lotus365-style back-lay ladder synthesis =====
-// The backend exposes a single decimal `odds` per option. Exchange UIs show a
-// 3-deep back ladder and a 3-deep lay ladder with traded volumes. We synthesise
-// that ladder deterministically around the base price so the display is stable
-// across re-renders (no Math.random — keeps SSR/StrictMode double-renders quiet).
+// ===== Betfair / Lotus365-style back-lay ladder =====
+// The backend (Diamond feed) exposes the REAL mirrored ladder per option:
+//   option.priceLadder = [{ side:'back'|'lay', tier:0..n (0=best), price, size }]
+//   option.backOdds / option.layOdds = tier-0 (best) prices
+//   option.size = tier-0 back liquidity
+// Fancy options carry a single real price (backOdds OR layOdds) and no ladder.
+// We render exactly what the feed gives us — no synthetic prices or volumes.
 
-// Standard Betfair price increments by band.
+// Standard Betfair price increments by band (used only by the bet-slip stepper).
 function tickSize(price) {
   if (price < 2) return 0.01;
   if (price < 3) return 0.02;
@@ -32,47 +34,47 @@ export function stepDown(price, n = 1) {
   return v;
 }
 
-// Deterministic pseudo-volume from price + slot, in the 0.7k–80k range banks see.
-function synthSize(price, seed, slot) {
-  const h = Math.abs(Math.sin((price * 12.9898 + seed * 4.1414 + slot * 7.233)) * 43758.5453);
-  const frac = h - Math.floor(h);
-  const base = price < 3 ? 6000 : price < 8 ? 2500 : 800;
-  return Math.round(base * (0.4 + frac * 5)) / 1; // ~0.3k .. 14k-ish
-}
+const EMPTY = { price: null, size: 0 };
 
 /**
- * Build a back/lay ladder around a base decimal price.
+ * Build the back/lay display arrays straight from the option's REAL ladder.
  * Returns { back: [{price,size} x3], lay: [{price,size} x3] }.
- * back is ordered worst→best (left→right, best adjacent to the spread).
- * lay is ordered best→worst (left→right, best adjacent to the spread).
+ *   - back is ordered worst→best (best adjacent to the spread, at index 2)
+ *   - lay  is ordered best→worst (best adjacent to the spread, at index 0)
+ * When there's no ladder (fancy = single price, or a suspended market with no
+ * prices) we show only the real best price the API gives — never a fake spread.
  */
-export function buildLadder(odds, seed = 1) {
-  if (!odds || odds <= 1) {
-    const empty = [{ price: null, size: 0 }, { price: null, size: 0 }, { price: null, size: 0 }];
-    return { back: empty, lay: empty };
+export function ladderFromOption(option, depth = 3) {
+  const rungs = Array.isArray(option?.priceLadder) ? option.priceLadder : [];
+  const back = rungs.filter((r) => r.side === 'back').sort((a, b) => a.tier - b.tier); // best→worst
+  const lay = rungs.filter((r) => r.side === 'lay').sort((a, b) => a.tier - b.tier);   // best→worst
+
+  const pad = (arr) => {
+    const out = arr.slice(0, depth).map((r) => ({ price: r.price, size: r.size }));
+    while (out.length < depth) out.push({ ...EMPTY });
+    return out;
+  };
+
+  if (back.length || lay.length) {
+    // Real full ladder (Match Odds / Bookmaker when live).
+    return { back: pad(back).reverse(), lay: pad(lay) };
   }
-  const bestBack = round2(odds);
-  const bestLay = stepUp(bestBack, 1);
-  const back = [stepDown(bestBack, 2), stepDown(bestBack, 1), bestBack];
-  const lay = [bestLay, stepUp(bestLay, 1), stepUp(bestLay, 2)];
+
+  // No ladder: single real price (fancy) or nothing (suspended → both null).
+  // Never fall back to option.odds — that can be the 1.01 suspended placeholder.
+  const b = option?.backOdds ?? null;
+  const l = option?.layOdds ?? null;
+  const size = option?.size || 0;
   return {
-    back: back.map((price, i) => ({ price, size: synthSize(price, seed, i) })),
-    lay: lay.map((price, i) => ({ price, size: synthSize(price, seed, i + 3) })),
+    back: [{ ...EMPTY }, { ...EMPTY }, { price: b, size: b != null ? size : 0 }],
+    lay: [{ price: l, size: l != null ? size : 0 }, { ...EMPTY }, { ...EMPTY }],
   };
 }
 
 // Compact money formatting used inside ladder cells: 25000 -> "25k", 738 -> "738".
 export function fmtSize(n) {
-  if (!n) return '0.0';
+  if (!n) return '';
   if (n >= 100000) return `${(n / 1000).toFixed(0)}k`;
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
   return String(Math.round(n));
-}
-
-// A stable numeric seed from a market/option id string.
-export function seedFrom(str) {
-  const s = String(str || '');
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 100000;
-  return h || 1;
 }
