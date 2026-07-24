@@ -62,7 +62,18 @@ export const bets = {
 
 export const wallet = {
   balance: () => unwrap(client.get('/wallet/balance')),
+  // Active bank/UPI destinations shown on the deposit page.
+  paymentAccounts: () => unwrap(client.get('/wallet/payment-accounts')),
   deposit: (data) => unwrap(client.post('/wallet/deposit', data)),
+  // Deposit against a specific account: multipart so the proof image rides along.
+  depositRequest: ({ amount, paymentAccountId, utr, proof }) => {
+    const form = new FormData();
+    form.append('amount', amount);
+    form.append('paymentAccountId', paymentAccountId);
+    form.append('utr', utr);
+    if (proof) form.append('proof', proof);
+    return unwrap(client.post('/wallet/deposit', form));
+  },
   withdraw: (data) => unwrap(client.post('/wallet/withdraw', data)),
   transactions: (params) => unwrap(client.get('/wallet/transactions', { params })),
 };
@@ -106,6 +117,11 @@ export const admin = {
   toggleScraper: (enabled) => unwrap(client.put('/admin/scraper/toggle', { enabled })),
   // Bookmaker odds
   refreshBookmakerOdds: () => unwrap(client.post('/admin/odds/refresh')),
+  // Payment accounts. Create/update send multipart so a QR image can be attached.
+  paymentAccounts: () => unwrap(client.get('/admin/payment-accounts')),
+  createPaymentAccount: (form) => unwrap(client.post('/admin/payment-accounts', form)),
+  updatePaymentAccount: (id, form) => unwrap(client.put(`/admin/payment-accounts/${id}`, form)),
+  deletePaymentAccount: (id) => unwrap(client.delete(`/admin/payment-accounts/${id}`)),
 };
 
 export { API_URL };

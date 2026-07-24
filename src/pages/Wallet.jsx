@@ -66,9 +66,8 @@ export default function Wallet() {
   const balance = (user?.balance ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
-    <div className="animate-fade-in">
-      <h1 className="page-title">Wallet</h1>
-      <p className="page-subtitle">Manage your funds, deposits and withdrawals</p>
+    <div className="animate-fade-in xc-page xc-panel">
+      <div className="xc-panel-head">Wallet</div>
 
       <div className="wallet-balance-card">
         <div className="wallet-balance-label">Available Balance</div>

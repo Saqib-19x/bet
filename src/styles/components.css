@@ -1312,3 +1312,878 @@
   .xch-ladder { grid-template-columns: repeat(2, 1fr); min-width: 120px; }
   .xch-lbl-back, .xch-lbl-lay { width: 60px; }
 }
+
+/* --- Login screen (full-bleed green) --- */
+.login-screen {
+  position: relative;
+  min-height: 100vh;
+  padding: var(--space-2xl) var(--space-lg) var(--space-3xl);
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(180deg, #0a4a37 0%, #3f9a6e 100%);
+}
+.login-close {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  color: #fff;
+  opacity: 0.9;
+  line-height: 0;
+  transition: opacity var(--transition-fast);
+}
+.login-close:hover { opacity: 1; }
+
+.login-stack {
+  width: 100%;
+  max-width: 420px;
+  margin-top: 3vh;
+}
+.login-wordmark {
+  text-align: center;
+  color: #fff;
+  font-size: clamp(2.75rem, 11vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: var(--space-2xl);
+}
+.login-wordmark span { color: #ffd400; }
+
+.login-card {
+  background: #333333;
+  border-radius: var(--radius-sm);
+  padding: 22px 20px 26px;
+}
+.login-heading {
+  text-align: center;
+  color: #1a8a5f;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-bottom: 20px;
+}
+.login-heading-mark { font-size: 1.1rem; }
+
+.login-error {
+  background: rgba(244, 67, 54, 0.15);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  color: #ff8a80;
+  font-size: var(--font-base);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+}
+
+.login-input {
+  display: block;
+  width: 100%;
+  background: #fff;
+  color: #222;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 15px 16px;
+  font-size: 1rem;
+  font-family: inherit;
+  margin-bottom: 14px;
+}
+.login-input::placeholder { color: #9a9a9a; }
+.login-input:focus {
+  outline: 2px solid #1a8a5f;
+  outline-offset: 1px;
+}
+
+.login-btn {
+  position: relative;
+  display: block;
+  width: 100%;
+  background: #17714f;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 14px 44px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: inherit;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: background var(--transition-fast);
+}
+.login-btn:hover:not(:disabled) { background: #1a8a5f; }
+.login-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+.login-btn-apk { background: #3aae4d; }
+.login-btn-apk:hover { background: #43c058; }
+.login-btn-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  line-height: 0;
+}
+
+.login-legal {
+  color: #e6e6e6;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  margin-top: 14px;
+}
+.login-legal a,
+.login-support { color: #4c9ff0; text-decoration: none; }
+.login-legal a:hover,
+.login-support:hover { text-decoration: underline; }
+.login-support {
+  display: block;
+  text-align: center;
+  margin-top: 14px;
+  font-size: 1rem;
+}
+
+/* ===================================================================
+   Exchange shell (Lotus365-style): full-width green header with
+   ticker + sports nav, light All-Sports sidebar, dense odds table.
+   Layout math is driven by --header-height / --sidebar-width so the
+   existing pages (wallet, my-bets, admin) keep their geometry.
+   =================================================================== */
+:root {
+  --xc-green: #0e7a52;
+  --xc-green-dark: #0a5c3e;
+  --xc-nav: #1f1f1f;
+  --xc-yellow: #ffe600;
+  --xc-back: #a6d8f5;
+  --xc-back-hover: #8ccbf1;
+  --xc-lay: #f6c6d2;
+  --xc-lay-hover: #f0adbe;
+  --xc-row: #ffffff;
+  --xc-row-alt: #f4f4f4;
+  --xc-ink: #1a1a1a;
+}
+
+/* --- Header (3 stacked rows, spans full width) --- */
+.xc-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-height);
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  background: var(--xc-green);
+}
+.xc-topbar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 16px;
+  height: 56px;
+  background: linear-gradient(180deg, #128a5c, #0b6844);
+}
+.xc-logo {
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #fff;
+  line-height: 1;
+  white-space: nowrap;
+}
+.xc-logo span { color: var(--xc-yellow); }
+.xc-topbar-spacer { flex: 1; }
+
+.xc-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  border: 2px solid transparent;
+}
+.xc-pill-deposit { color: #0b6844; border-color: #0b6844; }
+.xc-pill-withdraw { color: #c62828; border-color: #c62828; }
+.xc-pill:hover { filter: brightness(0.95); }
+
+.xc-rules {
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.xc-balance {
+  color: #fff;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+.xc-balance b { font-weight: 700; }
+.xc-balance u { cursor: pointer; }
+.xc-user {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* --- Marquee ticker --- */
+.xc-ticker {
+  height: 26px;
+  background: #0a5c3e;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+.xc-ticker-track {
+  display: inline-flex;
+  gap: 48px;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: xc-marquee 38s linear infinite;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.xc-ticker:hover .xc-ticker-track { animation-play-state: paused; }
+@keyframes xc-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* --- Sports nav strip --- */
+.xc-nav {
+  height: 38px;
+  background: var(--xc-nav);
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.xc-nav::-webkit-scrollbar { display: none; }
+.xc-nav a {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background var(--transition-fast);
+}
+.xc-nav a:hover { background: #333; }
+.xc-nav a.active { background: var(--xc-yellow); color: #000; }
+
+/* --- Sidebar (light All-Sports tree) --- */
+.xc-sidebar {
+  position: fixed;
+  left: 0;
+  top: var(--header-height);
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: #ececec;
+  border-right: 1px solid #c9c9c9;
+  overflow-y: auto;
+  z-index: 100;
+}
+.xc-side-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.xc-side-deposit { background: #128a5c; }
+.xc-side-deposit:hover { background: #15a06b; }
+.xc-side-withdraw { background: #d32f2f; }
+.xc-side-withdraw:hover { background: #e33e3e; }
+
+.xc-side-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 14px;
+  background: #0e7a52;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  cursor: pointer;
+  text-align: left;
+}
+.xc-side-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 14px;
+  color: #222;
+  font-size: 0.86rem;
+  text-decoration: none;
+  border-bottom: 1px solid #dcdcdc;
+}
+.xc-side-item:hover { background: #dcdcdc; }
+.xc-side-item.active { background: #d4eadf; font-weight: 700; }
+.xc-side-plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px; height: 14px;
+  border: 1px solid #888;
+  color: #444;
+  font-size: 0.7rem;
+  line-height: 1;
+  background: #fff;
+  flex-shrink: 0;
+}
+.xc-side-label {
+  padding: 7px 14px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #666;
+  background: #e0e0e0;
+}
+
+/* --- Exchange page body (light themed, Home only) --- */
+.xc-page {
+  margin: calc(var(--space-2xl) * -1);
+  padding: 8px;
+  background: #d8d8d8;
+  min-height: calc(100vh - var(--header-height));
+}
+
+/* Top strip of upcoming-match chips */
+.xc-chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  scrollbar-width: thin;
+}
+.xc-chip {
+  flex-shrink: 0;
+  min-width: 210px;
+  background: #4a4a4a;
+  border: 1px solid #5c5c5c;
+  border-radius: 3px;
+  padding: 7px 10px;
+  color: #fff;
+  text-decoration: none;
+}
+.xc-chip:hover { background: #565656; }
+.xc-chip-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.xc-chip-time {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 1px 6px;
+  background: #0e7a52;
+  border-radius: 2px;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+/* Tab strip above the table */
+.xc-tabs {
+  display: flex;
+  gap: 1px;
+  overflow-x: auto;
+  background: #c4c4c4;
+  scrollbar-width: none;
+}
+.xc-tabs::-webkit-scrollbar { display: none; }
+.xc-tab {
+  padding: 10px 20px;
+  background: #ededed;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #333;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.xc-tab:hover { background: #fff; }
+.xc-tab.active { background: #fff; border-bottom: 3px solid #0e7a52; }
+
+/* --- Odds table --- */
+.xc-table-wrap { overflow-x: auto; background: #fff; }
+.xc-table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  color: var(--xc-ink);
+}
+.xc-table thead th {
+  background: var(--xc-yellow);
+  color: #000;
+  font-weight: 700;
+  padding: 7px 10px;
+  border: 1px solid #d0c400;
+  text-align: center;
+}
+.xc-table thead th.xc-th-game { text-align: left; width: 55%; }
+.xc-table tbody tr { background: var(--xc-row); }
+.xc-table tbody tr:nth-child(even) { background: var(--xc-row-alt); }
+.xc-table tbody tr:hover { background: #e8f2ec; }
+.xc-table td {
+  padding: 7px 10px;
+  border: 1px solid #dcdcdc;
+  vertical-align: middle;
+}
+.xc-game {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.xc-game-link {
+  color: var(--xc-ink);
+  text-decoration: none;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.xc-game-link:hover { text-decoration: underline; }
+.xc-flags { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.xc-live-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: #2ecc40;
+  box-shadow: 0 0 0 2px rgba(46,204,64,0.25);
+}
+.xc-tag {
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 2px;
+  background: #7b1fa2;
+  color: #fff;
+  line-height: 1.4;
+}
+.xc-tag-bm { background: #4a148c; }
+
+/* Back (blue) / lay (pink) price cells */
+.xc-odd {
+  width: 8.33%;
+  padding: 0 !important;
+  text-align: center;
+}
+.xc-odd button {
+  display: block;
+  width: 100%;
+  padding: 8px 2px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--xc-ink);
+  cursor: pointer;
+  font-family: inherit;
+}
+.xc-odd button:disabled { cursor: default; color: #999; }
+.xc-back { background: var(--xc-back); }
+.xc-back:hover:not(:disabled) { background: var(--xc-back-hover); }
+.xc-lay { background: var(--xc-lay); }
+.xc-lay:hover:not(:disabled) { background: var(--xc-lay-hover); }
+
+.xc-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: #666;
+  background: #fff;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .xc-sidebar { display: none; }
+  /* Sidebar is hidden here, so the shell must reclaim its gutter. */
+  .main-content { margin-left: 0; }
+  .xc-page { margin: calc(var(--space-lg) * -1); }
+}
+
+/* --- Exchange panels (Cricket / Account Statement / Bet History) --- */
+.xc-panel { background: #8c8c8c; padding: 10px; min-height: calc(100vh - var(--header-height)); }
+.xc-page.xc-panel { margin: calc(var(--space-2xl) * -1); }
+.xc-panel-head {
+  background: linear-gradient(180deg, #128a5c, #0b6844);
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 11px 16px;
+  border-radius: 3px;
+  /* Separates the title bar from whatever follows it — the pages that don't
+     wrap their content in .xc-panel-body would otherwise sit flush against it. */
+  margin-bottom: 12px;
+}
+/* Top spacing now comes from .xc-panel-head's margin, so only pad the bottom. */
+.xc-panel-body { background: #8c8c8c; padding: 0 0 12px; }
+
+/* Filter row */
+.xc-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.xc-input {
+  padding: 10px 12px;
+  border: 1px solid #9a9a9a;
+  border-radius: 3px;
+  background: #b0b0b0;
+  color: #1a1a1a;
+  font-size: 0.9rem;
+  font-family: inherit;
+  min-width: 150px;
+}
+.xc-input:focus { outline: 2px solid #0e7a52; }
+.xc-submit {
+  padding: 10px 26px;
+  border: none;
+  border-radius: 3px;
+  background: #0e7a52;
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+.xc-submit:hover { background: #12996a; }
+.xc-toggle {
+  padding: 6px 14px;
+  border: 1px solid #0e7a52;
+  border-radius: 3px;
+  background: transparent;
+  color: #0b3b2a;
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+.xc-toggle.active { background: #0e7a52; color: #fff; }
+
+/* Statement / history table (gray theme) */
+.xc-grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  background: #8c8c8c;
+}
+.xc-grid th {
+  background: #7d7d7d;
+  color: #fff;
+  font-weight: 700;
+  padding: 11px 12px;
+  border: 1px solid #6b6b6b;
+  text-align: center;
+  white-space: nowrap;
+}
+.xc-grid td {
+  padding: 10px 12px;
+  border: 1px solid #6b6b6b;
+  color: #fff;
+  text-align: center;
+}
+.xc-grid td.xc-left { text-align: left; }
+.xc-credit { color: #00e676; font-weight: 600; }
+.xc-debit { color: #ff5252; font-weight: 600; }
+.xc-remark { color: #fff; text-decoration: underline; }
+.xc-grid-empty { padding: 26px; text-align: center; color: #fff; background: #8c8c8c; }
+
+/* Bet history rows are tinted by side, matching the exchange convention */
+.xc-grid tr.xc-row-back td { background: #7ec8f0; color: #10222c; border-color: #62b4e0; }
+.xc-grid tr.xc-row-lay td { background: #f4a7bb; color: #2c1018; border-color: #e290a6; }
+.xc-pl-win { color: #0a7a34; font-weight: 700; }
+.xc-pl-loss { color: #b3261e; font-weight: 700; }
+
+/* --- Match detail: exchange event bar --- */
+.xc-match { margin: calc(var(--space-2xl) * -1); padding: 8px; background: #8c8c8c; }
+.xc-event-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  background: #1f1f1f;
+  border-radius: 3px;
+}
+.xc-event-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.xc-event-time { color: #ddd; font-size: 0.85rem; white-space: nowrap; }
+
+/* --- Exchange theme overrides for pages that still use the dark card kit.
+   Scoped to .xc-panel so the admin pages keep the original dark styling. --- */
+.xc-panel .card,
+.xc-panel .stat-card {
+  background: #fff;
+  border-color: #c9c9c9;
+  color: var(--xc-ink);
+}
+.xc-panel .card:hover { background: #fafafa; border-color: #b5b5b5; }
+.xc-panel .card h2,
+.xc-panel .card h3,
+.xc-panel .card h4,
+.xc-panel .stat-card .stat-value { color: var(--xc-ink); }
+.xc-panel .stat-card .stat-label,
+.xc-panel .card p { color: #555; }
+
+.xc-panel .data-table th {
+  background: #7d7d7d;
+  color: #fff;
+  border-bottom: 1px solid #6b6b6b;
+}
+.xc-panel .data-table td {
+  color: var(--xc-ink);
+  border-bottom: 1px solid #dcdcdc;
+}
+.xc-panel .data-table tbody tr:hover { background: #eef4f1; }
+
+.xc-panel .input-field {
+  background: #fff;
+  border-color: #b5b5b5;
+  color: var(--xc-ink);
+}
+.xc-panel .input-field::placeholder { color: #8a8a8a; }
+.xc-panel .input-field:disabled { background: #e4e4e4; color: #666; }
+.xc-panel .input-group label { color: #333; }
+
+/* Tab/filter pills used by My Bets */
+.xc-panel .btn-secondary {
+  background: #ededed;
+  border-color: #bdbdbd;
+  color: #222;
+}
+.xc-panel .btn-secondary:hover { background: #fff; border-color: #999; }
+
+/* Rebind the dark-theme text/surface tokens inside exchange panels. Many of
+   these pages set colours inline via var(--text-secondary) etc., which would
+   otherwise beat any class-based override and stay unreadable on light cards. */
+.xc-panel {
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-tertiary: #6a6a6a;
+  --text-muted: #8a8a8a;
+  --bg-secondary: #dcdcdc;
+  --bg-tertiary: #ededed;
+  --bg-elevated: #e3e3e3;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f7f7f7;
+  --border-color: #cfcfcf;
+  --border-hover: #a8a8a8;
+}
+/* The panel's own chrome stays light-on-dark. */
+.xc-panel .xc-panel-head { color: #fff; }
+.xc-panel .xc-grid td { color: #fff; }
+.xc-panel .xc-grid tr.xc-row-back td { color: #10222c; }
+.xc-panel .xc-grid tr.xc-row-lay td { color: #2c1018; }
+
+/* Wallet balance card picks up the exchange green instead of the dark slab. */
+.xc-panel .wallet-balance-card {
+  background: linear-gradient(135deg, #128a5c, #0b6844);
+  border: 1px solid #0a5c3e;
+}
+.xc-panel .wallet-balance-label { color: rgba(255,255,255,0.85); }
+.xc-panel .wallet-balance-amount { color: #fff; }
+
+/* --- Deposit page --- */
+.xc-dep-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+.xc-dep-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: #fff;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.xc-dep-tab {
+  min-width: 108px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid #cfcfcf;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  font-family: inherit;
+  cursor: pointer;
+}
+.xc-dep-tab:hover { border-color: #0e7a52; }
+.xc-dep-tab.active { background: #0f6a49; border-color: #0f6a49; color: #fff; }
+
+.xc-dep-card { background: #fff; border-radius: 4px; padding: 18px; }
+.xc-dep-title {
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--xc-ink);
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid #0e7a52;
+  width: fit-content;
+  margin: 0 auto 18px;
+  padding-bottom: 6px;
+}
+.xc-dep-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 22px;
+}
+.xc-dep-details { background: #f2f2f2; border-radius: 6px; padding: 4px 14px; }
+.xc-dep-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid #e0e0e0;
+  color: var(--xc-ink);
+  font-size: 0.92rem;
+}
+.xc-dep-row:last-child { border-bottom: none; }
+.xc-dep-copy { background: none; border: none; color: #0e7a52; cursor: pointer; line-height: 0; }
+.xc-dep-qr { padding: 14px 0; text-align: center; }
+.xc-dep-qr img { max-width: 230px; width: 100%; border: 3px solid #d32f2f; border-radius: 4px; }
+.xc-qr-missing { padding: 20px; color: #777; font-size: 0.85rem; text-align: center; }
+
+.xc-dep-form { display: flex; flex-direction: column; }
+.xc-dep-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--xc-ink);
+  margin-bottom: 6px;
+}
+.xc-req { color: #d32f2f; font-size: 0.85rem; }
+.xc-dep-input { width: 100%; margin-bottom: 16px; background: #fff; }
+.xc-dep-file { margin-bottom: 16px; font-size: 0.9rem; color: var(--xc-ink); }
+.xc-dep-file::file-selector-button {
+  background: #0f6a49; color: #fff; border: none;
+  padding: 8px 14px; border-radius: 3px; margin-right: 10px;
+  font-family: inherit; cursor: pointer;
+}
+.xc-dep-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  color: var(--xc-ink);
+  font-size: 0.9rem;
+  margin: 4px 0 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+}
+.xc-dep-submit {
+  padding: 13px;
+  border: none;
+  border-radius: 4px;
+  background: #6dc17a;
+  color: #fff;
+  font-size: 1.05rem;
+  font-family: inherit;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+.xc-dep-submit:hover:not(:disabled) { background: #5bb469; }
+.xc-dep-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.xc-dep-error, .xc-dep-success {
+  padding: 10px 12px;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  margin-bottom: 14px;
+}
+.xc-dep-error { background: #fdecea; border: 1px solid #f5c2bd; color: #b3261e; }
+.xc-dep-success { background: #e6f4ea; border: 1px solid #a8d5b5; color: #0a7a34; }
+
+.xc-dep-notes {
+  background: #fff;
+  border-radius: 4px;
+  margin-top: 10px;
+  padding: 16px 16px 16px 34px;
+  color: #d32f2f;
+  font-size: 0.85rem;
+  line-height: 1.9;
+}
+.xc-dep-history { background: #fff; border-radius: 4px; overflow: hidden; }
+
+.xc-status {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: #fff;
+}
+.xc-status-completed { color: #0a7a34; border: 1px solid #0a7a34; }
+.xc-status-pending { color: #b26a00; border: 1px solid #b26a00; }
+.xc-status-failed, .xc-status-cancelled { color: #b3261e; border: 1px solid #b3261e; }
+
+/* --- Admin payment-account form --- */
+.xc-admin-form { background: #fff; border-radius: 4px; padding: 16px; margin-bottom: 14px; }
+.xc-admin-form-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px; color: var(--xc-ink); font-size: 1rem;
+}
+.xc-admin-form-head button { background: none; border: none; cursor: pointer; color: #555; line-height: 0; }
+.xc-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.xc-admin-grid label {
+  display: flex; flex-direction: column; gap: 6px;
+  font-size: 0.85rem; font-weight: 600; color: #333;
+}
+.xc-admin-check { flex-direction: row !important; align-items: center; }
+.xc-admin-qr img { max-width: 150px; border: 1px solid #ccc; border-radius: 4px; }
+
+.xc-icon-btn {
+  background: #ededed; border: 1px solid #bdbdbd; border-radius: 3px;
+  padding: 5px 8px; margin: 0 2px; cursor: pointer; color: #333; line-height: 0;
+}
+.xc-icon-btn:hover { background: #fff; }
+.xc-icon-danger { color: #b3261e; border-color: #e0a9a4; }
+
+@media (max-width: 1100px) {
+  .xc-dep-layout { grid-template-columns: 1fr; }
+  .xc-dep-cols { grid-template-columns: 1fr; }
+}

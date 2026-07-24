@@ -142,7 +142,22 @@ export default function MatchDetail() {
   const venuePhoto = match.sport === 'cricket' ? venueImageFor(match, { width: 1400 }) : null;
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in xc-match">
+      {/* Exchange-style event bar: title left, start time right */}
+      <div className="xc-event-bar">
+        <span className="xc-event-title">
+          {teamA} V {teamB}
+        </span>
+        <span className="xc-event-time">
+          {match.startTime
+            ? new Date(match.startTime).toLocaleString('en-IN', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
+              })
+            : ''}
+        </span>
+      </div>
+
       <Link to="/sports" className="btn btn-sm btn-secondary" style={{ marginBottom: 'var(--space-lg)' }}>
         <ArrowLeft size={14} /> Back to Sports
       </Link>

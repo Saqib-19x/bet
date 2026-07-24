@@ -1,173 +1,118 @@
-import { useEffect, useState } from 'react';
-import { Search } from 'lucide-react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { matches as matchesApi } from '../api/client';
-import TeamLogo from '../components/TeamLogo';
-import { Skeleton } from '../components/Skeleton';
-import EmptyState from '../components/EmptyState';
+import OddsTable from '../components/exchange/OddsTable';
 
-const sports = [
-  { id: 'cricket', name: 'Cricket', icon: '🏏' },
-  { id: 'football', name: 'Football', icon: '⚽' },
-  { id: 'tennis', name: 'Tennis', icon: '🎾' },
-  { id: 'basketball', name: 'Basketball', icon: '🏀' },
-];
+const SPORT_LABEL = {
+  all: 'All Sports',
+  cricket: 'Cricket',
+  football: 'Football',
+  tennis: 'Tennis',
+  basketball: 'Basketball',
+  baseball: 'Baseball',
+  hockey: 'Hockey',
+  mma: 'Mixed Martial Arts',
+  esports: 'Esports',
+};
 
 export default function Sports({ onAddSelection }) {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [activeSport, setActiveSport] = useState(searchParams.get('sport') || 'all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sport = searchParams.get('sport') || 'all';
+
   const [matches, setMatches] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [live, setLive] = useState([]);
+  // Which sport the loaded rows belong to. Deriving `loading` from this
+  // avoids a synchronous setState in the effect (which would cascade a render)
+  // while still showing the spinner immediately when `sport` changes.
+  const [loadedSport, setLoadedSport] = useState(null);
+  const [liveOnly, setLiveOnly] = useState(false);
+  const [sortBy, setSortBy] = useState('time');
+  const [query, setQuery] = useState('');
+
+  const loading = loadedSport !== sport;
 
   useEffect(() => {
-    setLoading(true);
-    const params = activeSport === 'all' ? {} : { sport: activeSport };
-    matchesApi.list(params)
-      .then((res) => setMatches(res.matches || []))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, [activeSport]);
+    let alive = true;
+    const params = sport === 'all' ? {} : { sport };
+    Promise.all([matchesApi.list(params), matchesApi.live(params)])
+      .then(([listRes, liveRes]) => {
+        if (!alive) return;
+        setMatches(listRes.matches || []);
+        setLive(liveRes.matches || []);
+      })
+      .catch((err) => console.error('Failed to load matches', err))
+      .finally(() => { if (alive) setLoadedSport(sport); });
+    return () => { alive = false; };
+  }, [sport]);
 
-  const filtered = matches.filter((m) => {
-    if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      (m.teamA?.name || '').toLowerCase().includes(q) ||
-      (m.teamB?.name || '').toLowerCase().includes(q) ||
-      (m.league || '').toLowerCase().includes(q)
-    );
-  });
+  const liveIds = useMemo(() => new Set(live.map((m) => m._id)), [live]);
 
-  const oddsBtn = (match, side) => {
-    const odds = match.odds?.[side];
-    const teamA = match.teamA?.name;
-    const teamB = match.teamB?.name;
-    if (!odds) return <span style={{ color: 'var(--text-tertiary)' }}>—</span>;
-    const selection = side === 'home' ? teamA : side === 'away' ? teamB : 'Draw';
-    return (
-      <button
-        className="odds-btn"
-        onClick={(e) => {
-          e.stopPropagation();
-          onAddSelection({
-            id: `${match._id}-${side}`,
-            matchId: match._id,
-            match: `${teamA} vs ${teamB}`,
-            selection,
-            odds,
-          });
-        }}
-      >
-        <span className="odds-value">{odds.toFixed(2)}</span>
-      </button>
-    );
-  };
+  const rows = useMemo(() => {
+    let out = matches;
+    if (liveOnly) out = out.filter((m) => liveIds.has(m._id));
+    if (query) {
+      const q = query.toLowerCase();
+      out = out.filter((m) =>
+        (m.teamA?.name || '').toLowerCase().includes(q) ||
+        (m.teamB?.name || '').toLowerCase().includes(q) ||
+        (m.league || '').toLowerCase().includes(q)
+      );
+    }
+    const sorted = [...out];
+    if (sortBy === 'league') {
+      sorted.sort((a, b) => (a.league || '').localeCompare(b.league || '')
+        || new Date(a.startTime) - new Date(b.startTime));
+    } else {
+      sorted.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+    }
+    return sorted;
+  }, [matches, liveOnly, liveIds, query, sortBy]);
 
   return (
-    <div className="animate-fade-in">
-      <h1 className="page-title">Sports</h1>
-      <p className="page-subtitle">Browse all available events and place your bets</p>
+    <div className="xc-page xc-panel">
+      <div className="xc-panel-head">{SPORT_LABEL[sport] || sport}</div>
 
-      <div style={{ display: 'flex', gap: 'var(--space-sm)', flexWrap: 'wrap', marginBottom: 'var(--space-xl)' }}>
-        <button
-          className={`tab ${activeSport === 'all' ? 'active' : ''}`}
-          onClick={() => setActiveSport('all')}
-          style={{ borderRadius: 'var(--radius-full)' }}
-        >
-          All Sports
-        </button>
-        {sports.map((sport) => (
-          <button
-            key={sport.id}
-            className={`tab ${activeSport === sport.id ? 'active' : ''}`}
-            onClick={() => setActiveSport(sport.id)}
-            style={{ borderRadius: 'var(--radius-full)', display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            <span>{sport.icon}</span> {sport.name}
-          </button>
-        ))}
-      </div>
-
-      <div style={{ marginBottom: 'var(--space-xl)', maxWidth: '400px' }}>
-        <div className="input-with-icon">
-          <Search size={16} className="input-icon" />
+      <div className="xc-panel-body">
+        <div className="xc-filters">
           <input
-            type="text"
-            className="input-field"
-            placeholder="Search teams, leagues..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            className="xc-input"
+            placeholder="Search team or league…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
           />
-        </div>
-      </div>
-
-      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-        {loading ? (
-          <div style={{ padding: 'var(--space-lg)', display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {[0,1,2,3,4].map((i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <Skeleton width={28} height={28} radius={999} />
-                <Skeleton width="35%" height={16} />
-                <Skeleton width={80} height={14} style={{ marginLeft: 'auto' }} />
-                <Skeleton width={48} height={28} radius={6} />
-                <Skeleton width={48} height={28} radius={6} />
-                <Skeleton width={48} height={28} radius={6} />
-              </div>
+          <select
+            className="xc-input"
+            value={sport}
+            onChange={(e) => setSearchParams({ sport: e.target.value })}
+          >
+            {Object.entries(SPORT_LABEL).map(([id, label]) => (
+              <option key={id} value={id}>{label}</option>
             ))}
-          </div>
-        ) : filtered.length === 0 ? (
-          <EmptyState preset={searchQuery ? 'search' : 'matches'} compact />
-        ) : (
-          <table className="data-table" id="sports-table">
-            <thead>
-              <tr>
-                <th>Event</th>
-                <th>League</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'center' }}>1</th>
-                <th style={{ textAlign: 'center' }}>X</th>
-                <th style={{ textAlign: 'center' }}>2</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((match) => (
-                <tr key={match._id} style={{ cursor: 'pointer' }} onClick={() => navigate(`/match/${match._id}`)}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        <TeamLogo name={match.teamA?.name} logo={match.teamA?.logo} size={24} />
-                        <TeamLogo name={match.teamB?.name} logo={match.teamB?.logo} size={24} />
-                      </div>
-                      <div>
-                        <div style={{ fontWeight: 600 }}>{match.teamA?.name}</div>
-                        <div style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)' }}>vs {match.teamB?.name}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <span style={{ color: 'var(--text-secondary)', fontSize: 'var(--font-sm)' }}>{match.league}</span>
-                  </td>
-                  <td>
-                    {match.status === 'live' ? (
-                      <span className="badge badge-live"><div className="live-dot" style={{ width: 6, height: 6 }}></div> LIVE</span>
-                    ) : match.status === 'completed' ? (
-                      <span style={{ fontSize: 'var(--font-sm)', color: 'var(--text-tertiary)' }}>Completed</span>
-                    ) : (
-                      <span style={{ fontSize: 'var(--font-sm)', color: 'var(--text-secondary)' }}>
-                        {new Date(match.startTime).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    )}
-                  </td>
-                  <td style={{ textAlign: 'center' }}>{oddsBtn(match, 'home')}</td>
-                  <td style={{ textAlign: 'center' }}>{oddsBtn(match, 'draw')}</td>
-                  <td style={{ textAlign: 'center' }}>{oddsBtn(match, 'away')}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+          </select>
+
+          <button
+            className={`xc-toggle${liveOnly ? ' active' : ''}`}
+            onClick={() => setLiveOnly((v) => !v)}
+          >
+            • LIVE
+          </button>
+
+          <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, color: '#1a1a1a', fontWeight: 600 }}>
+            View by:
+            <select className="xc-input" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+              <option value="time">TIME</option>
+              <option value="league">LEAGUE</option>
+            </select>
+          </span>
+        </div>
+
+        <OddsTable
+          matches={rows}
+          liveIds={liveIds}
+          onAddSelection={onAddSelection}
+          loading={loading}
+          emptyText={liveOnly ? 'No live events right now.' : 'No events for this sport.'}
+        />
       </div>
     </div>
   );

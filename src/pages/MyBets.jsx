@@ -187,9 +187,8 @@ export default function MyBets() {
   }, [sharingBet]);
 
   return (
-    <div className="animate-fade-in">
-      <h1 className="page-title">My Bets</h1>
-      <p className="page-subtitle">Track all your bets and winnings</p>
+    <div className="animate-fade-in xc-page xc-panel">
+      <div className="xc-panel-head">My Bets</div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-md)', marginBottom: 'var(--space-2xl)' }}>
         <div className="stat-card blue">

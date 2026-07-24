@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './styles/global.css';
 import './styles/components.css';
 
@@ -18,6 +18,9 @@ import Sports from './pages/Sports';
 import MatchDetail from './pages/MatchDetail';
 import LiveBetting from './pages/LiveBetting';
 import MyBets from './pages/MyBets';
+import BetHistory from './pages/BetHistory';
+import AccountStatement from './pages/AccountStatement';
+import Deposit from './pages/Deposit';
 import Wallet from './pages/Wallet';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
@@ -30,6 +33,7 @@ import BetManagement from './pages/admin/BetManagement';
 import OddsManagement from './pages/admin/OddsManagement';
 import Transactions from './pages/admin/Transactions';
 import Settings from './pages/admin/Settings';
+import PaymentAccounts from './pages/admin/PaymentAccounts';
 
 function AppLayout({ selections, setSelections, betSlipOpen, setBetSlipOpen }) {
   const { updateBalance } = useAuth();
@@ -131,7 +135,10 @@ export default function App() {
           <Route path="/match/:id" element={<MatchDetail onAddSelection={addSelection} />} />
           <Route path="/live" element={<LiveBetting onAddSelection={addSelection} />} />
           <Route path="/my-bets" element={<MyBets />} />
+          <Route path="/bet-history" element={<BetHistory />} />
+          <Route path="/account-statement" element={<AccountStatement />} />
           <Route path="/wallet" element={<Wallet />} />
+          <Route path="/deposit" element={<Deposit />} />
           <Route path="/profile" element={<Profile />} />
 
           {/* Admin routes */}
@@ -142,6 +149,7 @@ export default function App() {
           <Route path="/admin/odds" element={<AdminRoute><OddsManagement /></AdminRoute>} />
           <Route path="/admin/transactions" element={<AdminRoute><Transactions /></AdminRoute>} />
           <Route path="/admin/settings" element={<AdminRoute><Settings /></AdminRoute>} />
+          <Route path="/admin/payment-accounts" element={<AdminRoute><PaymentAccounts /></AdminRoute>} />
         </Route>
       </Routes>
       </NotificationProvider>

@@ -1,20 +1,29 @@
-import { useState, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 import {
-  Home, Trophy, Tv, TicketCheck, Wallet, User, Settings,
-  LayoutDashboard, Users, Receipt, Sliders, BarChart3, Zap, Shield, AlertTriangle
+  ChevronRight, ChevronDown, PiggyBank, BanknoteArrowDown,
+  LayoutDashboard, Users, Receipt, Sliders, TicketCheck, AlertTriangle, Settings, Zap, Landmark,
 } from 'lucide-react';
-import BrandMark from './BrandMark';
-import { useAuth } from '../contexts/AuthContext';
-import { matches as matchesApi } from '../api/client';
 
-const userNav = [
-  { path: '/', icon: Home, label: 'Home' },
-  { path: '/sports', icon: Trophy, label: 'Sports' },
-  { path: '/live', icon: Tv, label: 'Live Betting' },
-  { path: '/my-bets', icon: TicketCheck, label: 'My Bets' },
-  { path: '/wallet', icon: Wallet, label: 'Wallet' },
-  { path: '/profile', icon: User, label: 'Profile' },
+// Mirrors the Match.js sport enum — these are the only sports the API can
+// actually return events for.
+const SPORTS = [
+  { id: 'cricket', label: 'Cricket' },
+  { id: 'football', label: 'Football' },
+  { id: 'tennis', label: 'Tennis' },
+  { id: 'basketball', label: 'Basketball' },
+  { id: 'baseball', label: 'Baseball' },
+  { id: 'hockey', label: 'Hockey' },
+  { id: 'mma', label: 'Mixed Martial Arts' },
+  { id: 'esports', label: 'Esports' },
+];
+
+const OTHERS = [
+  { to: '/bet-history', label: 'Bet History' },
+  { to: '/account-statement', label: 'Account Statement' },
+  { to: '/my-bets', label: 'My Bets' },
+  { to: '/wallet', label: 'Wallet' },
+  { to: '/profile', label: 'Profile' },
 ];
 
 const adminNav = [
@@ -24,76 +33,74 @@ const adminNav = [
   { path: '/admin/bets', icon: TicketCheck, label: 'Bets' },
   { path: '/admin/odds', icon: Sliders, label: 'Odds' },
   { path: '/admin/transactions', icon: Receipt, label: 'Transactions' },
+  { path: '/admin/payment-accounts', icon: Landmark, label: 'Payment Accounts' },
   { path: '/admin/settings', icon: Settings, label: 'Settings' },
 ];
 
 export default function Sidebar() {
   const location = useLocation();
-  const { user } = useAuth();
-  const isAdminUser = user?.role === 'admin';
   const isAdmin = location.pathname.startsWith('/admin');
-  const nav = isAdmin ? adminNav : userNav;
+  const [sportsOpen, setSportsOpen] = useState(true);
+  const [othersOpen, setOthersOpen] = useState(false);
 
-  // Live match count for the "Live Betting" badge — real, not hardcoded.
-  const [liveCount, setLiveCount] = useState(0);
-  useEffect(() => {
-    let alive = true;
-    const load = () => matchesApi.live()
-      .then((res) => { if (alive) setLiveCount((res.matches || []).length); })
-      .catch(() => {});
-    load();
-    const t = setInterval(load, 30000);
-    return () => { alive = false; clearInterval(t); };
-  }, []);
+  // Admin keeps its own flat nav — the sports tree is meaningless there.
+  if (isAdmin) {
+    return (
+      <aside className="xc-sidebar" id="main-sidebar">
+        <div className="xc-side-label">Admin</div>
+        {adminNav.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            end={item.path === '/admin'}
+            className={({ isActive }) => `xc-side-item${isActive ? ' active' : ''}`}
+          >
+            <item.icon size={15} />
+            <span>{item.label}</span>
+          </NavLink>
+        ))}
+        <div className="xc-side-label">Platform</div>
+        <Link to="/" className="xc-side-item"><Zap size={15} /> Back to App</Link>
+      </aside>
+    );
+  }
 
   return (
-    <aside className="sidebar" id="main-sidebar">
-      <div className="sidebar-logo">
-        <div className="logo-icon" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <BrandMark size={22} color="#0a1612" strokeWidth={2.2} />
-        </div>
-        <h1>BetKing</h1>
-      </div>
-      <nav className="sidebar-nav">
-        <div className="sidebar-section">
-          <div className="sidebar-section-title">{isAdmin ? 'Admin' : 'Menu'}</div>
-          {nav.map(item => {
-            const badge = item.path === '/live' ? (liveCount > 0 ? String(liveCount) : null) : item.badge;
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                end={item.path === '/' || item.path === '/admin'}
-                className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-              >
-                <item.icon size={18} />
-                <span>{item.label}</span>
-                {badge && <span className="nav-badge">{badge}</span>}
-              </NavLink>
-            );
-          })}
-        </div>
+    <aside className="xc-sidebar" id="main-sidebar">
+      <Link to="/deposit" className="xc-side-action xc-side-deposit">
+        <PiggyBank size={17} /> Deposit
+      </Link>
+      <Link to="/wallet" className="xc-side-action xc-side-withdraw">
+        <BanknoteArrowDown size={17} /> Withdraw
+      </Link>
 
-        {!isAdmin && isAdminUser && (
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">Quick Links</div>
-            <NavLink to="/admin" className="nav-link">
-              <Shield size={18} />
-              <span>Admin Panel</span>
-            </NavLink>
-          </div>
-        )}
+      <button className="xc-side-head" onClick={() => setOthersOpen((o) => !o)}>
+        Others {othersOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+      </button>
+      {othersOpen && OTHERS.map((o) => (
+        <NavLink
+          key={o.to}
+          to={o.to}
+          className={({ isActive }) => `xc-side-item${isActive ? ' active' : ''}`}
+        >
+          <span className="xc-side-plus">+</span>
+          <span>{o.label}</span>
+        </NavLink>
+      ))}
 
-        {isAdmin && (
-          <div className="sidebar-section">
-            <div className="sidebar-section-title">Platform</div>
-            <NavLink to="/" className="nav-link">
-              <Zap size={18} />
-              <span>Back to App</span>
-            </NavLink>
-          </div>
-        )}
-      </nav>
+      <button className="xc-side-head" onClick={() => setSportsOpen((o) => !o)}>
+        All Sports {sportsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+      </button>
+      {sportsOpen && SPORTS.map((s) => (
+        <NavLink
+          key={s.id}
+          to={`/sports?sport=${s.id}`}
+          className={({ isActive }) => `xc-side-item${isActive ? ' active' : ''}`}
+        >
+          <span className="xc-side-plus">+</span>
+          <span>{s.label}</span>
+        </NavLink>
+      ))}
     </aside>
   );
 }

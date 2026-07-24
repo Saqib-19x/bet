@@ -65,9 +65,8 @@ export default function Profile() {
   const joined = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : '—';
 
   return (
-    <div className="animate-fade-in">
-      <h1 className="page-title">Profile</h1>
-      <p className="page-subtitle">Manage your account settings and preferences</p>
+    <div className="animate-fade-in xc-page xc-panel">
+      <div className="xc-panel-head">Profile</div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-xl)' }}>
         <div className="card">
@@ -115,15 +114,6 @@ export default function Profile() {
             <div className="input-group">
               <label>Email</label>
               <input type="email" className="input-field" value={user?.email || ''} disabled />
-            </div>
-            <div className="input-group">
-              <label>Phone</label>
-              <input
-                type="tel"
-                className="input-field"
-                value={profile.phone}
-                onChange={(e) => setProfile((p) => ({ ...p, phone: e.target.value }))}
-              />
             </div>
             <button className="btn btn-primary" style={{ alignSelf: 'flex-start' }} onClick={saveProfile} disabled={savingProfile}>
               {savingProfile ? 'Saving…' : 'Save Changes'}
